@@ -4,13 +4,13 @@ function [ J ] = convolution( I, kernel, border )
 % border --> treatment of the border: either mirroring ('mirror') or same as
 % corresponding border pixels ('border')
 
+    % transpose kernel
+    kernel = kernel.';
+
     size_I = size(I);
     size_kernel = size(kernel);
     
     J = zeros(size_I);
-    
-    % transpose kernel
-    kernel = kernel.';
     
     % run through the image
     for i=1:size_I(1)
