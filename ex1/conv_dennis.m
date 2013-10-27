@@ -9,6 +9,10 @@ H_conv = rot90(H,2);
 
 kernel_size = size(H_conv);
 sum_weights_kernel = sum(sum(H_conv));
+if sum_weights_kernel == 0
+    sum_weights_kernel = 1;
+end
+
 half_kernel_size = floor(kernel_size/2);
 
 % now pad image accordingly
@@ -26,6 +30,4 @@ for i=1:a
         J(i,j) = sum(sum(H_conv.*I_padded(i:(i+kernel_size(1)-1), j:(j+kernel_size(2)-1))));  
     end
 end
-% divide through the sum of the kernel weights
-J = J ./ sum_weights_kernel;
 end
