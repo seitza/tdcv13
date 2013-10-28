@@ -1,4 +1,4 @@
-function [ mask ] = gen_gaussian_2D( sigma )
+function [ mask ] = gen_gaussian_2D_andre( sigma )
 %GEN_GAUSSIAN_2D Summary of this function goes here
 %   Detailed explanation goes here
 

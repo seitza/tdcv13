@@ -1,4 +1,4 @@
-function [ mask_y mask_x ] = gen_gaussian_1D( sigma )
+function [ mask_y mask_x ] = gen_gaussian_1D_andre( sigma )
 %GEN_GAUSSIAN_1D Summary of this function goes here
 %   Detailed explanation goes here
 

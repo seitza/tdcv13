@@ -1,4 +1,4 @@
-function [ image_convoluted ] = generic_convolution( image, mask, border_treatment )
+function [ image_convoluted ] = generic_convolution_andre( image, mask, border_treatment )
 %GENERIC_CONVOLUTION generic convolution using mxn mask and certain border
 %treatment
 
