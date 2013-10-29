@@ -17,9 +17,9 @@ function [ J ] = convolution_linda( I, kernel, border )
         for j=1:size_I(2)
             % run through the kernel
             for m = 1:size_kernel(1)
-                m_I = m-(size_kernel(1)-1)/2;
+                m_I = m-(size_kernel(1)-1)/2-1;
                 for n = 1:size_kernel(2)
-                    n_I = n-(size_kernel(2)-1)/2;
+                    n_I = n-(size_kernel(2)-1)/2-1;
                     if i+m_I < 1 && j+n_I < 1       % upper left corner
                         if strcmp(border,'mirror')
                             J(i,j) = J(i,j) + I((i+m_I)*(-1)+1,(j+n_I)*(-1)+1)*kernel(m,n);

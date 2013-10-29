@@ -1,4 +1,4 @@
-function J = conv_dennis(I,H,border_treatment)
+function [J] = conv_dennis(I,H,border_treatment)
     % if we do not specify border_treatment, then use 'replicate' by default
     if nargin ~= 3
         border_treatment = 0;
