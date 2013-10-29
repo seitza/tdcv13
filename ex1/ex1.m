@@ -8,7 +8,6 @@ H = [[1,1,1];[1,1,1];[1,1,1]]/9;
 
 I = double(imread('lena.gif'))/255.0;
 J = conv_dennis(I,H,'replicate');
-
 %% plotting
 figure('NumberTitle', 'Off', 'Name', 'Exercise 1');
 subplot(1,2,1);

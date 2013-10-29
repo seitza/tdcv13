@@ -53,14 +53,12 @@ J_gauss_2D_s3 = convolution_linda(I, mask_2D_s3, 'mirror');
 
 % show convoluted image using the second border handling (border)
 figure
-imagesc(J_gauss_2D_s3), axis equal tight off, colormap gray
-title('2D gauss with sigma = 3.0')
+imagesc(J_gauss_2D_s3), axis equal tight off, colormap graytitle('2D gauss with sigma = 3.0')
 
 %b)
 % sigma = 1.0
 [mask_1D_s1_horizontal, mask_1D_s1_vertical] = gauss_1D_linda(1.0);                         %generate gaussian mask
-J_gauss_1D_s1 = convolution_linda(I, mask_1D_s1_horizontal, 'mirror');
-J_gauss_1D_s1 = convolution_linda(J_gauss_1D_s1, mask_1D_s1_vertical, 'mirror');
+J_gauss_1D_s1 = convolution_linda(convolution_linda(I, mask_1D_s1_horizontal, 'mirror'), mask_1D_s1_vertical, 'mirror');
 
 % show convoluted image using the second border handling (border)
 figure
@@ -69,8 +67,7 @@ title('1D gauss with sigma = 1.0')
 
 % sigma = 3.0
 [mask_1D_s3_horizontal, mask_1D_s3_vertical] = gauss_1D_linda(3.0);                         %generate gaussian mask
-J_gauss_1D_s3 = convolution_linda(I, mask_1D_s3_horizontal, 'mirror');
-J_gauss_1D_s3 = convolution_linda(J_gauss_1D_s3, mask_1D_s3_vertical, 'mirror');
+J_gauss_1D_s3 = convolution_linda(convolution_linda(I, mask_1D_s3_horizontal, 'mirror'), mask_1D_s3_vertical, 'mirror');
 
 % show convoluted image using the second border handling (border)
 figure
@@ -100,6 +97,21 @@ time_2D = toc;
 disp(['time to process 2D: ' num2str(time_2D)]);
 
 %% Exercise 3
+%a)
+Dx = [-1,0,1;-1,0,1;-1,0,1];
+Dy = [-1,-1,-1;0,0,0;1,1,1];
 
+I = imread('lena.gif');
+
+J_Dx = convolution_linda(I, Dx, 'mirror');
+J_Dy = convolution_linda(I, Dy, 'mirror');
+
+figure
+imagesc(J_Dx), axis equal tight off, colormap gray
+title('convolution using Dx')
+
+figure
+imagesc(J_Dy), axis equal tight off, colormap gray
+title('convolution using Dy')
 
 

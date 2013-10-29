@@ -10,9 +10,11 @@ function [ mask ] = gauss_2D_linda( sigma )
        i_I = i-half_size_rows-1;
        for j=1:size_columns
           j_I = j-half_size_columns-1;
-          mask(i,j) = 1/(2*pi*sigma^2)*exp(-1/2*(i_I^2+j_I^2)/sigma^2);
+          mask(i,j) = exp(-1/2*(i_I^2+j_I^2)/sigma^2);
        end
     end
-
+    
+    mask = mask / sum(sum(mask));
+    
 end
 
