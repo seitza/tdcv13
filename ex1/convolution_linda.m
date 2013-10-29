@@ -1,4 +1,4 @@
-function [ J ] = convolution( I, kernel, border )
+function [ J ] = convolution_linda( I, kernel, border )
 % I --> image that should be changed
 % kernel --> matrix for convolution
 % border --> treatment of the border: either mirroring ('mirror') or same as
