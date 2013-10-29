@@ -12,7 +12,7 @@ function J = conv_dennis(I,H,border_treatment)
     end
     
     % first, rotate kernel and then get dimensions of kernel
-    H_conv = H';
+    H_conv = rot90(H,2);
     kernel_size = size(H_conv);
     half_kernel_size = (kernel_size-1)/2;
 

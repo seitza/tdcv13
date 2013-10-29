@@ -62,5 +62,5 @@ imagesc(Img_1D_sigma1), axis equal tight off, colormap gray;
 title('Lena filtered with 1D filters (sigma=1)');
 
 subplot(3,2,6);
-imagesc(Img_1D_sigma3), axis equal tight off, colormap gray;;
+imagesc(Img_1D_sigma3), axis equal tight off, colormap gray;
 title('Lena filtered with 1D filters (sigma=3)');
