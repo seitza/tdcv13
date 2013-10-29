@@ -10,29 +10,6 @@ clear;
 % clear command window
 clc;       
 
-
-%% Exercise 1
-
-I = double(imread('lena.gif'))/255.0;
-kernel = ones(3)/9;
-J_border = conv_dennis(I, kernel, 'border');
-J_mirror = conv_dennis(I, kernel, 'mirror');
-
-% show original image
-figure
-imagesc(I), axis equal tight off, colormap gray
-title('original image')
-
-% show convoluted image using the second border handling (border)
-figure
-imagesc(J_border), axis equal tight off, colormap gray
-title('border')
-
-% show convoluted image using the second border handling (border)
-figure
-imagesc(J_mirror), axis equal tight off, colormap gray
-title('mirror')
-
 %% Exercise 2
 
 I = double(imread('lena.gif'))/255.0;
@@ -70,5 +47,3 @@ disp(s1)
 
 s3 = sum(sum((J_1D_s3-J_2D_s3).*(J_1D_s3-J_2D_s3)));
 disp(s3)
-
-%% Exercise 3
