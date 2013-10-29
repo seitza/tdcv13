@@ -11,7 +11,6 @@ x_mask_half = (mask_size(2)-1)/2;
 p_I = padarray(d_I,[y_mask_half x_mask_half],'symmetric');
 [y_image, x_image] = size(p_I);
 
-disp(y_mask_half+1);
 for i = y_mask_half+1:y_image-y_mask_half
     for j = x_mask_half+1:x_image-x_mask_half
         %disp([i-y_mask_half j-y_mask_half])
