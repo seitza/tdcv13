@@ -6,7 +6,10 @@ function [J] = conv_dennis(I,H,border_treatment)
         switch border_treatment
             case 'mirror'
                 border_treatment = 'symmetric';
+            case 'border'
+                border_treatment = 'replicate';
             otherwise
+                fprintf('Do not know border treatment %s - assuming "border"\n', border_treatment);
                 border_treatment = 'replicate';
         end
     end
@@ -17,7 +20,7 @@ function [J] = conv_dennis(I,H,border_treatment)
     half_kernel_size = (kernel_size-1)/2;
 
     % now pad image accordingly
-    I_padded = padarray(I,half_kernel_size,border_treatment);
+    I_padded = padarray(I,half_kernel_size,border_treatment,'both');
 
     % get size of input image
     [a,b] = size(I);

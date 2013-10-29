@@ -12,7 +12,6 @@ clc;
 
 
 %% Exercise 1
-
 I = double(imread('lena.gif'))/255.0;
 kernel = ones(3)/9;
 J_border = conv_dennis(I, kernel, 'border');
