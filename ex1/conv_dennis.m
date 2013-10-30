@@ -1,4 +1,4 @@
-function J = conv_dennis(I,H,border_treatment)
+function [J] = conv_dennis(I,H,border_treatment)
     % if we do not specify border_treatment, then use 'replicate' by default
     if nargin ~= 3
         border_treatment = 0;
@@ -6,18 +6,21 @@ function J = conv_dennis(I,H,border_treatment)
         switch border_treatment
             case 'mirror'
                 border_treatment = 'symmetric';
+            case 'border'
+                border_treatment = 'replicate';
             otherwise
+                fprintf('Do not know border treatment %s - assuming "border"\n', border_treatment);
                 border_treatment = 'replicate';
         end
     end
     
     % first, rotate kernel and then get dimensions of kernel
-    H_conv = H';
+    H_conv = rot90(H,2);
     kernel_size = size(H_conv);
     half_kernel_size = (kernel_size-1)/2;
 
     % now pad image accordingly
-    I_padded = padarray(I,half_kernel_size,border_treatment);
+    I_padded = padarray(I,half_kernel_size,border_treatment,'both');
 
     % get size of input image
     [a,b] = size(I);

@@ -73,4 +73,14 @@ disp(s3)
 
 %% Exercise 3
 
+Dx = [-1 0 1; -1 0 1; -1 0 1];
+Dy = [-1 -1 -1; 0 0 0; 1 1 1];
+
+I = imread('lena.gif');
+
+I_Dx = generic_convolution_andre(I,Dx,'mirror');
+I_Dy = generic_convolution_andre(I,Dy,'mirror');
+
+mag = magnitude_andre(I_Dx,I_Dy);
+
 
