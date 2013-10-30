@@ -20,7 +20,7 @@ function [ J ] = convolution_linda( I, kernel, border )
     end    
     
     % padding I
-    I_padded = padarray(I, [halfsize_kernel, halfsize_kernel], border);
+    I_padded = padarray(I, [halfsize_kernel(1), halfsize_kernel(2)], border);
     
     [I_rows, I_columns] = size(I);
     
