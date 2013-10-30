@@ -1,6 +1,7 @@
-function [J] = conv_dennis(I,H,border_treatment)
+function [J] = convolution(I,H,border_treatment)
     % if we do not specify border_treatment, then use 'replicate' by default
     if nargin ~= 3
+        % nothing specified fill with zeros - same behavior as conv2
         border_treatment = 0;
     else
         switch border_treatment

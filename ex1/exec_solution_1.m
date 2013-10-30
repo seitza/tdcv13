@@ -14,8 +14,8 @@ clc;
 %% Exercise 1
 I = double(imread('lena.gif'))/255.0;
 kernel = ones(3)/9;
-J_border = conv_dennis(I, kernel, 'border');
-J_mirror = conv_dennis(I, kernel, 'mirror');
+J_border = convolution(I, kernel, 'border');
+J_mirror = convolution(I, kernel, 'mirror');
 
 % show original image
 figure

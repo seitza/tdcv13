@@ -17,17 +17,17 @@ s3 = 3;
 
 border_treatment = 'border';
 
-mask_2d_s1 = gen_gaussian_2D_andre(s1);
-mask_2d_s3 = gen_gaussian_2D_andre(s3);
+mask_2d_s1 = gen_gaussian_2D(s1);
+mask_2d_s3 = gen_gaussian_2D(s3);
 
 fprintf('Filtering with 2D-Gaussian with sigma %d\n', s1);
 tic;
-J_2D_s1 = conv_dennis(I, mask_2d_s1, border_treatment);
+J_2D_s1 = convolution(I, mask_2d_s1, border_treatment);
 toc;
 
 fprintf('Filtering with 2D-Gaussian with sigma %d\n', s3);
 tic;
-J_2D_s3 = conv_dennis(I, mask_2d_s3, border_treatment);
+J_2D_s3 = convolution(I, mask_2d_s3, border_treatment);
 toc;
 
 figure
@@ -38,23 +38,23 @@ figure
 imagesc(J_2D_s3), axis equal tight off, colormap gray
 title('gauss 2D sigma3')
 
-[mask_1d_s1_y,mask_1d_s1_x] = gen_gaussian_1D_andre(1);
-[mask_1d_s3_y,mask_1d_s3_x] = gen_gaussian_1D_andre(3);
+[mask_1d_s1_y,mask_1d_s1_x] = gen_gaussian_1D(1);
+[mask_1d_s3_y,mask_1d_s3_x] = gen_gaussian_1D(3);
 
 fprintf('\nFiltering with 2*1D-Gaussian with sigma %d\n', s1);
 tic;
-J_1D_s1 = conv_dennis(conv_dennis(I, mask_1d_s1_y, border_treatment),mask_1d_s1_x, border_treatment);
+J_1D_s1 = convolution(convolution(I, mask_1d_s1_y, border_treatment),mask_1d_s1_x, border_treatment);
 toc;
 
 fprintf('Filtering with 2*1D-Gaussian with sigma %d\n', s3);
 tic;
-J_1D_s3 = conv_dennis(conv_dennis(I, mask_1d_s3_y, border_treatment),mask_1d_s3_x, border_treatment);
+J_1D_s3 = convolution(convolution(I, mask_1d_s3_y, border_treatment),mask_1d_s3_x, border_treatment);
 toc;
 
 figure
 imagesc(J_1D_s1), axis equal tight off, colormap gray
 title('gauss 1D sigma1')
-%
+
 figure
 imagesc(J_1D_s3), axis equal tight off, colormap gray
 title('gauss 1D sigma3')

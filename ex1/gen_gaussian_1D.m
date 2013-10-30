@@ -1,7 +1,6 @@
-function [ mask_y mask_x ] = gen_gaussian_1D_andre( sigma )
+function [ mask_y mask_x ] = gen_gaussian_1D( sigma )
 %GEN_GAUSSIAN_1D Summary of this function goes here
 %   Detailed explanation goes here
-
     mask_y = zeros(3*sigma,1);
     mask_x = zeros(1,3*sigma);
     

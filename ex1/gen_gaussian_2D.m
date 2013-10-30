@@ -1,4 +1,4 @@
-function [ res ] = gen_gaussian_2D_andre( sigma )
+function [ res ] = gen_gaussian_2D( sigma )
 %GEN_GAUSSIAN_2D Summary of this function goes here
 %   Detailed explanation goes here
 
