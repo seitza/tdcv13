@@ -31,14 +31,22 @@ Imag_smooth = sqrt(Ix_smooth.^2 + Iy_smooth.^2);
 Idir_smooth = atan2(Iy_smooth, Ix_smooth);
 
 %% plotting
+figure
+imagesc(I), axis equal tight off, colormap gray
+title('original')
+
 figure;
 imshow(Imag);
+title('magnitude')
 
 figure;
 imshow(Idir);
+title('orientation')
 
 figure;
 imshow(Imag_smooth);
+title('magnitude smooth')
 
 figure;
 imshow(Idir_smooth);
+title('orientation_smooth');
