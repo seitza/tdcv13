@@ -12,6 +12,10 @@ clc;
 %% Exercise 2
 I = double(imread('lena.gif'))/255.0;
 
+figure
+imagesc(I), axis equal tight off, colormap gray
+title('original')
+
 s1 = 1;
 s3 = 3;
 
