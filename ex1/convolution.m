@@ -31,14 +31,11 @@ function [J] = convolution(I,H,border_treatment)
     % now loop over every element and do the convolution
     for i=1:a
         for j=1:b
-            % add offset to work in padded image
-            summed_value = 0;
             for r=1:kernel_size(1)
                 for s=1:kernel_size(2)
-                    summed_value = summed_value + I_padded(r+i-1,s+j-1) * H_conv(r,s);
+                    J(i,j) = J(i,j) + I_padded(r+i-1,s+j-1) * H_conv(r,s);
                 end
             end
-            J(i,j) = summed_value;
         end
     end
 end
