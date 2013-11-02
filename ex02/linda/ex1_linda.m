@@ -20,7 +20,7 @@ J_sp_median = median_filter_linda(I_sp, median_size, median_size);
 
 %% visualize images
 
-figure('Name', 'Exercise 2', 'NumberTitle', 'off');
+figure('Name', 'Exercise 1', 'NumberTitle', 'off');
 subplot(2,3,1);
 imagesc(I_gauss), axis equal tight off, colormap gray;
 title('gaussian noise');

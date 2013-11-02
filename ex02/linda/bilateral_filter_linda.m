@@ -15,10 +15,10 @@ function [ J ] = bilateral_filter_linda( I, sigma )
             for m = -halfsize_mask:halfsize_mask
                 for n = -halfsize_mask:halfsize_mask
                     % domain filter
-                    distance = sqrt((-m)^2 + (-n)^2);
+                    distance = sqrt((m)^2 + (n)^2);
                     closeness = exp(-1/2*(distance/sigma)^2);
                     % range filter
-                    similarity = exp(-1/2*(abs(I_padded(i+m, j+n)-I_padded(i,j)/sigma))^2);
+                    similarity = exp(-1/2*(abs(I_padded(i+m, j+n)-I_padded(i,j))/sigma)^2);
                     
                     a = a + closeness * similarity;
                     b = b + I_padded(i+m, j+n) * closeness * similarity;
