@@ -8,11 +8,11 @@ function [ J ] = median_filter_linda( I, size_x, size_y )
     
     J = zeros(size(I));
     
-    for i = 1+halfsize_y:I_rows+halfsize_y-1
-        for j = 1+halfsize_x:I_cols+halfsize_x-1
+    for i = 1+halfsize_y:I_rows+halfsize_y
+        for j = 1+halfsize_x:I_cols+halfsize_x
             values = I_padded(i-halfsize_y:i+halfsize_y, j-halfsize_x:j+halfsize_x);
             values_vector = reshape(values, 1, numel(values));
-            J(i,j) = median(values_vector);
+            J(i-halfsize_y,j-halfsize_x) = median(values_vector);
         end
     end
 

@@ -1,9 +1,12 @@
 %% Exercise 1
+close all;
+clear;
+clc;
 
 %c)
 I = imread('lena.gif');
 
-sigma = 1.0;
+sigma = 3.0;
 median_size = 3*sigma;
 
 I_gauss = noise_linda(I, 'gaussian', sigma);
