@@ -1,5 +1,6 @@
 function [ J ] = bilateral_filter( I_in, sigma_domain, sigma_range )
 
+%just some note here^
 I_d = double(I_in);
 J = zeros(size(I_d));
 [kernelsize_y,kernelsize_x] = size(zeros(3*max(sigma_domain,sigma_range)));
