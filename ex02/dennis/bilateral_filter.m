@@ -18,11 +18,11 @@ function J = bilateral_filter(I, sigma_domain, sigma_range)
             for p=1:m
                 for q=1:n
                     % domain filter
-                    dist = norm(center_element - [p;q], 1);
+                    dist = sqrt((center_element(1)-p)^2 + (center_element(2)-q)^2);
                     closeness = exp(-0.5*(dist/sigma_domain)^2);
                     
                     % range filter
-                    range = norm(I_padded(i+p-1,j+q-1) - I(i,j),1);
+                    range = abs(I_padded(i+p-1,j+q-1) - I(i,j));
                     similarity = exp(-0.5*(range/sigma_range)^2);
                     
                     J(i,j) = I_padded(i+p-1,j+q-1)*closeness*similarity + J(i,j);
