@@ -31,17 +31,17 @@ title('Salt and pepper noise');
 figure('Name', 'Filtering with gauss filter', 'NumberTitle', 'Off')
 subplot(1,2,1);
 imagesc(I_gauss_gauss_filt), axis equal tight off, colormap gray
-title('Gaussian noise');
+title('Filtered gaussian noise');
 
 subplot(1,2,2);
 imagesc(I_sp_gauss_filt), axis equal tight off, colormap gray
-title('Salt and pepper noise');
+title('Filtered salt and pepper noise');
 
 figure('Name', 'Filtering with median filter', 'NumberTitle', 'Off')
 subplot(1,2,1);
 imagesc(I_gauss_median_filt), axis equal tight off, colormap gray
-title('Gaussian noise');
+title('Filtered gaussian noise');
 
 subplot(1,2,2);
 imagesc(I_sp_median_filt), axis equal tight off, colormap gray
-title('Salt and pepper noise');
+title('Filtered salt and pepper noise');
