@@ -6,10 +6,43 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
 % th - threshold for harris detector
 % tl - threshold for laplace detector
 
-    harris = zeros(size(I), res_level);
+    Dy = [-1,-1,-1;0,0,0;1,1,1];
+    Dx = Dy';
 
-    for i = 1:res_level
-        harris(:,:,i) = harris_detector(I, n, s0, k, alpha, t);
+    harris = cell(1, res_level);
+    laplace = zeros(size(I, 1), size(I,2), res_level);
+    % conduct harris detector for the resolution levels and store the
+    % results in harris
+    for n = 1:res_level
+        harris{1,n} = harris_detector(I, n, s0, k, alpha, th);
+        
+        %compute laplacian
+        sigmaI = s0*(k^n);
+        sigmaI_odd = floor(sigmaD);
+        if mod(sigmaI_odd, 2) == 0
+            sigmaI_odd = sigmaI_odd + 1;
+        end
+        
+        gauss_mask_I = fspecial('gaussian', [3*sigmaI_odd, 3*sigmaI_odd], sigmaI_odd);
+        I_gauss = conv2(I, gauss_mask_I, 'same');
+        
+        I_g_xx = conv2(conv2(I_gauss, Dx, 'same'), Dx, 'same');
+        I_g_yy = conv2(conv2(I_gauss, Dy, 'same'), Dy, 'same');
+         
+        for i = 1:size(I,1)
+            for j = 1:size(I,2)
+                laplace(i,j,n) = abs(sigmaI^2*(I_g_xx(i,j)+I_g_yy(i,j)));
+            end
+        end
+        
+    end
+    
+    %threshold laplace
+    laplace(laplace < tl) = 0;
+    
+    % check if local maxima found by harris detector are stable in laplace
+    for n = 2:res_level-1
+        
     end
 
 

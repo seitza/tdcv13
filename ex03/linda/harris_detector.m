@@ -11,8 +11,7 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
     sigmaD_odd = floor(sigmaD);
     if mod(sigmaI_odd, 2) == 0
         sigmaI_odd = sigmaI_odd + 1;
-    end
-    
+    end  
     if mod(sigmaD_odd, 2) == 0
         sigmaD_odd = sigmaD_odd + 1;
     end
@@ -50,7 +49,7 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
     
     % find local maximums in R and mark them in J
     %J = double(I);
-    J = zeros(size(I));
+    J = [];
     neighbor_size = 3;
     half_size = (neighbor_size-1)/2;
     
@@ -67,7 +66,8 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
                 end
             end
             if maximum == 1
-                J(i,j) = 1;
+                %J(i,j) = 1;
+                J = [J; i, j];
             end
         end
     end
