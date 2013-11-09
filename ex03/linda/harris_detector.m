@@ -5,14 +5,23 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
 % alpha - constant factor
 % t - threshold value
 
-    sigmaI = round(s0*(k^n));
-    sigmaD = round(0.7*sigmaI);
+    sigmaI = s0*(k^n);
+    sigmaD = 0.7*sigmaI;
+    sigmaI_odd = floor(sigmaI);
+    sigmaD_odd = floor(sigmaD);
+    if mod(sigmaI_odd, 2) == 0
+        sigmaI_odd = sigmaI_odd + 1;
+    end
+    
+    if mod(sigmaD_odd, 2) == 0
+        sigmaD_odd = sigmaD_odd + 1;
+    end
     
     Dy = [-1,-1,-1;0,0,0;1,1,1];
     Dx = Dy';
 
-    gauss_mask_D = fspecial('gaussian', [3*sigmaD, 3*sigmaD], sigmaD);
-    gauss_mask_I = fspecial('gaussian', [3*sigmaI, 3*sigmaI], sigmaI);
+    gauss_mask_D = fspecial('gaussian', [3*sigmaD_odd, 3*sigmaD_odd], sigmaD_odd);
+    gauss_mask_I = fspecial('gaussian', [3*sigmaI_odd, 3*sigmaI_odd], sigmaI_odd);
     
     I_gauss = conv2(I, gauss_mask_D, 'same');
     
@@ -36,9 +45,13 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
         end
     end
     
+    % thresholding
+    R(R<t) = 0;
+    
     % find local maximums in R and mark them in J
-    J = double(I);
-    neighbor_size = 3;
+    %J = double(I);
+    J = zeros(size(I));
+    neighbor_size = 5;
     half_size = (neighbor_size-1)/2;
     
     for i = half_size+1:size(I,1)-half_size
