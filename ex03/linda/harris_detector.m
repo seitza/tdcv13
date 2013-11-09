@@ -51,7 +51,7 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
     % find local maximums in R and mark them in J
     %J = double(I);
     J = zeros(size(I));
-    neighbor_size = 5;
+    neighbor_size = 3;
     half_size = (neighbor_size-1)/2;
     
     for i = half_size+1:size(I,1)-half_size
@@ -67,7 +67,7 @@ function [ J ] = harris_detector( I, n, s0, k, alpha, t )
                 end
             end
             if maximum == 1
-                J(i,j) = 255;
+                J(i,j) = 1;
             end
         end
     end
