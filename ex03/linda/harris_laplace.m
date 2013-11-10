@@ -41,8 +41,27 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
     laplace(laplace < tl) = 0;
     
     % check if local maxima found by harris detector are stable in laplace
+    neighbor_size = 3;
+    half_size = (neighbor_size-1)/2;
+    
     for n = 2:res_level-1
-        
+        h = harris{1, n};
+        for i = 1:size(h, 1)
+            row = h(i,1);
+            col = h(i,2);
+            current_value = laplace(row, col, n);
+            maximum = 1;
+            for y = -half_size:half_size
+                for x = -half_size:half_size
+                    if laplace(row+y, col+x, n-1) >= current_value | laplace(row+y, col+x, n+1) >= current_value
+                        maximum = 0;
+                    end
+                end
+            end
+            if maximum == 1
+                
+            end
+        end
     end
 
 
