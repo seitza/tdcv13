@@ -1,8 +1,10 @@
 %% Exercise 1
-
+clc;
+close all;
+clear;
 
 I = imread('lena.gif');
-I_double = double(I(:,:,1));
+I_double = double(I);
 
 s0 = 1.5;
 k = 1.2;

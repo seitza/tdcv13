@@ -1,4 +1,4 @@
-function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
+function [ harris_laplace ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
 % res_level - resolution level
 % s0 - initial scale
 % k - factor between two levels of resolution
@@ -10,7 +10,9 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
     Dx = Dy';
 
     harris = cell(1, res_level);
-    laplace = zeros(size(I, 1), size(I,2), res_level);
+    laplace = zeros(size(I, 1), size(I,2), res_level+2);
+    laplace(:,:,1) = zeros(size(I));                    % zeros for the smallest and highest scale level
+    laplace(:,:,res_level+2) = zeros(size(I));
     % conduct harris detector for the resolution levels and store the
     % results in harris
     for n = 1:res_level
@@ -18,7 +20,7 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
         
         %compute laplacian
         sigmaI = s0*(k^n);
-        sigmaI_odd = floor(sigmaD);
+        sigmaI_odd = floor(sigmaI);
         if mod(sigmaI_odd, 2) == 0
             sigmaI_odd = sigmaI_odd + 1;
         end
@@ -31,7 +33,7 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
          
         for i = 1:size(I,1)
             for j = 1:size(I,2)
-                laplace(i,j,n) = abs(sigmaI^2*(I_g_xx(i,j)+I_g_yy(i,j)));
+                laplace(i,j,n+1) = abs(sigmaI^2*(I_g_xx(i,j)+I_g_yy(i,j)));
             end
         end
         
@@ -44,8 +46,11 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
     neighbor_size = 3;
     half_size = (neighbor_size-1)/2;
     
-    for n = 2:res_level-1
-        h = harris{1, n};
+    harris_laplace = cell(1,res_level);     % stores the remaining coordinates for each scale level
+    
+    for n = 2:res_level+1
+        h = harris{1, n-1};
+        J = [];                 % to store the remaining coordinates
         for i = 1:size(h, 1)
             row = h(i,1);
             col = h(i,2);
@@ -53,17 +58,17 @@ function [ J ] = harris_laplace( I, res_level, s0, k, alpha, th, tl )
             maximum = 1;
             for y = -half_size:half_size
                 for x = -half_size:half_size
-                    if laplace(row+y, col+x, n-1) >= current_value | laplace(row+y, col+x, n+1) >= current_value
+                    if laplace(row+y, col+x, n-1) >= current_value || laplace(row+y, col+x, n+1) >= current_value
                         maximum = 0;
                     end
                 end
             end
             if maximum == 1
-                
+                J = [J; row, col];
             end
         end
+        harris_laplace{1,n-1} = J;
     end
-
 
 end
 
