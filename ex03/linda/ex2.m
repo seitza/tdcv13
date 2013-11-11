@@ -5,8 +5,10 @@ close all;
 clear;
 
 
-I = imread('lena.gif');
-I_double = double(I);
+%I = imread('lena.gif');
+%I_double = double(I);
+I = imread('harris.jpg');
+I_double = double(I(:,:,1));
 
 res_level = 5;
 s0 = 1.5;
@@ -23,6 +25,6 @@ for i = 1:res_level
     imagesc(I), colormap gray, axis equal tight off;
     hold on;
     p = points{1,i};
-    plot(p(:,1), p(:,2), 'r+');
+    plot(p(:,2), p(:,1), 'r+');
     title(['resolution level ' num2str(i)]);
 end
