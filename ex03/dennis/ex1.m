@@ -7,7 +7,7 @@ I = double(imread('lena.gif'));
 
 s0 = 1.5;
 k = 1.2;
-t = 100;
+t = 1000000;
 alpha = 0.06;
 n = [0; 5; 17];
 

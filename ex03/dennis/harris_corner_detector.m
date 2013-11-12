@@ -11,18 +11,16 @@ Gaussian_integration = fspecial('gaussian', [round(3*sigma_In), round(3*sigma_In
 Dy = -fspecial('prewitt');
 Dx = Dy';
 
-% smooth the masks
-Gy = conv2(Dy, Gaussian_derivative, 'same');
-Gx = conv2(Dx, Gaussian_derivative, 'same');
-
 %% compute the multiscale harris-corner response
-Ix = conv2(I,Gx,'same');
-Iy = conv2(I,Gy,'same');
+G = conv2(I,Gaussian_derivative,'same');
+Gx = conv2(G, Dx, 'same');
+Gy = conv2(G, Dy, 'same');
+
 
 % compute derivative matrices, smooth them and apply scale normalization
-Ixx = conv2(Ix .^ 2, Gaussian_integration, 'same') * sigma_Dn^2;
-Ixy = conv2(Ix .* Iy, Gaussian_integration, 'same') * sigma_Dn^2;
-Iyy = conv2(Iy .^ 2, Gaussian_integration, 'same') * sigma_Dn^2;
+Ixx = conv2(Gx .^ 2, Gaussian_integration, 'same') * sigma_Dn^2;
+Ixy = conv2(Gx .* Gy, Gaussian_integration, 'same') * sigma_Dn^2;
+Iyy = conv2(Gy .^ 2, Gaussian_integration, 'same') * sigma_Dn^2;
 
 % corner response matrix
 R = zeros(size(I));
@@ -30,14 +28,14 @@ R = zeros(size(I));
 for i=1:size(I,1)
     for j=1:size(I,2)
         M = [Ixx(i,j), Ixy(i,j); Ixy(i,j), Iyy(i,j)];
-        R(i,j) = abs(det(M) - alpha*trace(M)^2);
+        R(i,j) = det(M) - alpha*trace(M)^2;
     end
 end
 
 % threshold R
-t = 0.01*max(max(R));
+% t = 0.01*max(max(R));
 R(R < t) = 0;
 % compute non-maximum suppression
-R = non_max_supp(R, [3 3]);
+R = non_max_supp(R, [3,3]);
 [row, column] = find(R);
 end
