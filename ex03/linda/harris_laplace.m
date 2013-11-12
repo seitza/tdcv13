@@ -30,7 +30,7 @@ function [ harris_laplace ] = harris_laplace( I, res_level, s0, k, alpha, th, tl
         
         I_g_xx = conv2(conv2(I_gauss, Dx, 'same'), Dx, 'same');
         I_g_yy = conv2(conv2(I_gauss, Dy, 'same'), Dy, 'same');
-         
+        
         for i = 1:size(I,1)
             for j = 1:size(I,2)
                 laplace(i,j,n+1) = abs(sigmaI^2*(I_g_xx(i,j)+I_g_yy(i,j)));
@@ -43,9 +43,6 @@ function [ harris_laplace ] = harris_laplace( I, res_level, s0, k, alpha, th, tl
     laplace(laplace < tl) = 0;
     
     % check if local maxima found by harris detector are stable in laplace
-    neighbor_size = 3;
-    half_size = (neighbor_size-1)/2;
-    
     harris_laplace = cell(1,res_level);     % stores the remaining coordinates for each scale level
     
     for n = 2:res_level+1
@@ -54,16 +51,7 @@ function [ harris_laplace ] = harris_laplace( I, res_level, s0, k, alpha, th, tl
         for i = 1:size(h, 1)
             row = h(i,1);
             col = h(i,2);
-            current_value = laplace(row, col, n);
-            maximum = 1;
-            for y = -half_size:half_size
-                for x = -half_size:half_size
-                    if laplace(row+y, col+x, n-1) >= current_value || laplace(row+y, col+x, n+1) >= current_value
-                        maximum = 0;
-                    end
-                end
-            end
-            if maximum == 1
+            if laplace(row, col, n) > laplace(row, col, n-1) && laplace(row, col, n) > laplace(row, col, n+1)
                 J = [J; row, col];
             end
         end
