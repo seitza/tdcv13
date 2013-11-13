@@ -12,7 +12,7 @@ s0 = 1.5;
 alpha = 0.06;
 
 th = 1500;
-tl = 5;
+tl = 10;
 
 feature_points = harris_laplace(I,n,k,s0,alpha,th,tl);
 
