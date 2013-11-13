@@ -1,5 +1,5 @@
 I = double(imread('lena.gif'));
-poi = harris_laplace_andre(I,5);
+poi = harris_laplace_andre(I,17);
 
 figure;
 imagesc(I);
