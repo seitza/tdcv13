@@ -4,8 +4,18 @@ sigma_In = s0 * k^n;
 sigma_Dn = 0.7*sigma_In;
 
 % compute gaussians
-Gaussian_derivative = fspecial('gaussian', [round(3*sigma_Dn), round(3*sigma_Dn)], sigma_Dn);
-Gaussian_integration = fspecial('gaussian', [round(3*sigma_In), round(3*sigma_In)], sigma_In);
+size_derivative_kernel = floor(3*sigma_Dn);
+if mod(size_derivative_kernel,2) == 1
+    size_derivative_kernel = size_derivative_kernel + 1;
+end
+
+size_integration_kernel = floor(3*sigma_In);
+if mod(size_integration_kernel,2) == 1
+    size_integration_kernel = size_integration_kernel + 1;
+end
+    
+Gaussian_derivative = fspecial('gaussian', [size_derivative_kernel, size_derivative_kernel], sigma_Dn);
+Gaussian_integration = fspecial('gaussian', [size_integration_kernel, size_integration_kernel], sigma_In);
 
 % get derivative masks
 Dy = -fspecial('prewitt');
@@ -15,7 +25,6 @@ Dx = Dy';
 G = conv2(I,Gaussian_derivative,'same');
 Gx = conv2(G, Dx, 'same');
 Gy = conv2(G, Dy, 'same');
-
 
 % compute derivative matrices, smooth them and apply scale normalization
 Ixx = conv2(Gx .^ 2, Gaussian_integration, 'same') * sigma_Dn^2;
