@@ -48,12 +48,12 @@ for i=0:n
         if i+1==1
             laplacian_m_up = scale_space_2nd{i+2}(y,x);
             if laplacian_m > laplacian_m_up
-               poi = vertcat(poi,[y,x,k^i]);
+                %poi = vertcat(poi,[y,x,k^i]);
             end
         elseif i+1==n+1
             laplacian_m_down = scale_space_2nd{i}(y,x);
             if laplacian_m > laplacian_m_down
-                poi = vertcat(poi,[y,x,k^i]);
+                %poi = vertcat(poi,[y,x,k^i]);
             end
         else
             laplacian_m_up = scale_space_2nd{i+2}(y,x);
