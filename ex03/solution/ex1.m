@@ -2,7 +2,7 @@
 clc;
 close all;
 clear;
-
+%%
 I = imread('lena.gif');
 I_double = double(I);
 
