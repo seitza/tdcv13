@@ -1,8 +1,8 @@
 %% Exercise 2
 
-clc;
-close all;
-clear;
+% clc;
+% close all;
+% clear;
 
 
 I = imread('lena.gif');
@@ -10,7 +10,7 @@ I_double = double(I);
 %I = imread('harris.jpg');
 %I_double = double(I(:,:,1));
 
-res_level = 5;
+res_level = 6;
 s0 = 1.5;
 k = 1.2;
 alpha = 0.04;
