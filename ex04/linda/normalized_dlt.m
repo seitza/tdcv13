@@ -21,6 +21,6 @@ function [ H ] = normalized_dlt( coords_reference, coords_warped )
     Hsnake = dlt([scaled_reference,ones(n,1)], [scaled_warped,ones(n,1)]);
     H = inv(T)*Hsnake*U;
 
-
+    %r = H*[coords_reference, ones(n,1)]';
 end
 
