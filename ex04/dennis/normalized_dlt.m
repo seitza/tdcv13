@@ -2,6 +2,7 @@ function [H] = normalized_dlt(ref_points, warped_points)
 % create transformation matrices
 U = create_normalization_matrix(ref_points);
 x_twiddle = U*ref_points;
+
 T = create_normalization_matrix(warped_points);
 x_prime_twiddle = T*warped_points;
 
@@ -16,10 +17,7 @@ end
 
 % obtain SVD decomposition
 [~,~,V] = svd(A_twiddle);
-V_trans = V';
-% h is the last column of V'
-h_twiddle = V_trans(:,end);
 % make the matrix H of it
-H_twiddle = reshape(h_twiddle, 3, 3);
-H = H_twiddle\T*U;
+H_twiddle = reshape(V(:,end), 3, 3)';
+H = inv(T) * H_twiddle * U;
 end
