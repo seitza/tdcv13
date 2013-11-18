@@ -4,11 +4,12 @@ function H = ransac(ref_points, warped_points, s, t, T, N)
         fprintf('Changing parameter s to 4!\n');
         s = 4;
     end
-    
+
     % select randomly a sample from data_points
     best_consensus_set = [];
     for i=1:N
-        random_sample = randsample(size(ref_points,2), s);
+        count_points = size(ref_points,2);
+        random_sample = randsample(count_points, s);
         ref_sample = ref_points(:,random_sample);
         warp_sample = warped_points(:,random_sample);
         
@@ -18,10 +19,12 @@ function H = ransac(ref_points, warped_points, s, t, T, N)
         % apply homography onto ref_points and compare them with
         % warped_points
         estimated_warped_points = H*ref_points;
+        estimated_warped_points = estimated_warped_points ./ repmat(estimated_warped_points(3,:), 3, 1);
        
         % determine consensus set
-        distances = estimated_warped_points - warped_points;
+        distances = warped_points - estimated_warped_points; 
         distances = sqrt(distances(1,:).^2 + distances(2,:).^2 + distances(3,:).^2);
+        
         consensus_set = find(distances < t);
         nr_of_inliers = length(consensus_set);
         
@@ -32,5 +35,6 @@ function H = ransac(ref_points, warped_points, s, t, T, N)
             best_consensus_set = consensus_set;
         end
     end
+    % estimate line with best consenus set!
     H = normalized_dlt(ref_points(:,best_consensus_set), warped_points(:,best_consensus_set));
 end
