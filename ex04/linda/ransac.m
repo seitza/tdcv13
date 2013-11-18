@@ -1,4 +1,4 @@
-function [ H ] = ransac( ipoints_reference, ipoints_warped, N, t, T )
+function [ H ] = ransac( ipoints_reference, ipoints_warped, s, N, t, T )
 % interest points for both images, either arranged in a (n x 2) array.
 % Corresponding interest points are in the same row.
 
@@ -7,10 +7,10 @@ function [ H ] = ransac( ipoints_reference, ipoints_warped, N, t, T )
     largest_inliers = [];    % stores the properties of the largest Si
     
     for i = 1:N
-        s = randsample(n,4);    % random sample that represents the rows of the points to determine the homography
-        H = normalized_dlt(ipoints_reference(s,:), ipoints_warped(s,:));
+        sample = randsample(n,s);    % random sample that represents the rows of the points to determine the homography
+        H = normalized_dlt(ipoints_reference(sample,:), ipoints_warped(sample,:));
         trans = (H*ipoints_reference_with1')';
-        distance = sqrt((ipoints_reference(:,1)-trans(:,1))^2 + (ipoints_reference(:,2)-trans(:,2))^2 + (1-trans(:,3))^2);
+        distance = sqrt((ipoints_reference(:,1)-trans(:,1)).^2 + (ipoints_reference(:,2)-trans(:,2)).^2 + (1-trans(:,3)).^2);
         inliers = find(distance < t);
         if numel(inliers) > T
             largest_inliers = inliers;

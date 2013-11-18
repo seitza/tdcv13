@@ -5,3 +5,12 @@ s=4;
 t=3;
 T=6;
 N=20;
+
+%% normal ransac
+H_ransac = ransac(S1, S2, s, N, t, T);
+
+%% adaptively ransac
+
+H_adapt = ransac_adaptively(S1, S2, s, t);
+%disp(H_adapt);
+
