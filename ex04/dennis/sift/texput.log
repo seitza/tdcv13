@@ -1,0 +1,13 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Arch Linux) (format=mex 2013.10.22)  19 NOV 2013 10:51
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**"CFLAGS=$CFLAGS -I. -pedantic -Wall -g -O3 -Wno-variadic-macros " imsmooth.c 
+-o imsmooth
+
+! Emergency stop.
+<*> ...dantic -Wall -g -O3 -Wno-variadic-macros " 
+                                                  imsmooth.c -o imsmooth
+End of file on the terminal!
+
+No pages of output.

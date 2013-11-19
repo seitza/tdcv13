@@ -18,6 +18,8 @@ end
 % obtain SVD decomposition
 [~,~,V] = svd(A_twiddle);
 % make the matrix H of it
-H_twiddle = reshape(V(:,end), 3, 3)';
+h_twiddle = V(:,9);
+H_twiddle = reshape(h_twiddle, 3, 3)';
 H = inv(T) * H_twiddle * U;
+H = H/H(3,3);
 end
