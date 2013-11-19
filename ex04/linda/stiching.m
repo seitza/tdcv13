@@ -1,18 +1,18 @@
 function [ stitched_image ] = stiching( im1, im2 )
 
     % compute interes points
-    descr1 = vl_sift(im1);
-    descr2 = vl_sift(im2);
+    [f1, d1] = vl_sift(im1);
+    [f2, d2] = vl_sift(im2);
 
     % find matching interes points
-    matches = vl_ubcmatch(descr1, descr2);
+    [matches, scores] = vl_ubcmatch(d1, d2);
     %ipoints1 = [descr1(2, matches(1,:)); descr1(1, matches(1,:))]';
-    ipoints1 = (descr1(1:2,matches(1,:)))';
+    ipoints1 = round(f1(1:2,matches(1,:)))';
     %ipoints2 = [descr2(2, matches(2,:)); descr2(1, matches(2,:))]';
-    ipoints2 = (descr2(1:2,matches(2,:)))';
+    ipoints2 = round(f2(1:2,matches(2,:)))';
     
     % compute homography
-    H = ransac(ipoints1, ipoints2, 4, 15, 0.5, 50);
+    H = ransac(ipoints1, ipoints2, 4, 500, 1, 50);
         
     % compute new coordinates
     trans_image = im1;
@@ -21,10 +21,10 @@ function [ stitched_image ] = stiching( im1, im2 )
     new_coords_orig = zeros(size(orig_image, 1), size(orig_image, 1), 2);
     for i = 1:size(trans_image,1)
         for j = 1:size(trans_image,2)
-            t = H*[i; j; 1];
+            t = H*[j; i; 1];
             t = t ./ t(3);
-            new_coords_trans(i,j,1) = t(1);    % store new rows
-            new_coords_trans(i,j,2) = t(2);    % store new cols
+            new_coords_trans(i,j,1) = t(2);    % store new rows
+            new_coords_trans(i,j,2) = t(1);    % store new cols
         end
     end
     for i = 1:size(orig_image,1)
@@ -58,9 +58,6 @@ function [ stitched_image ] = stiching( im1, im2 )
     % trans_image coordinates
     for i = 1:size(trans_image, 1)
         for j = 1:size(trans_image, 2)
-%             disp('###################################');
-%             disp(new_coords_trans(i,j,1));
-%             disp(new_coords_trans(i,j,2));
             stitched_image(new_coords_trans(i,j,1), new_coords_trans(i,j,2)) = trans_image(i,j);
         end
     end

@@ -19,6 +19,10 @@ N=20;
 H_ransac = ransac_dennis(S1_dennis, S2_dennis, s, N, t, T);
 disp(H_ransac);
 
+%% normal ransac dennis
+[j,i,H_ransac] = ransac_andre(S1_dennis', S2_dennis', s, N, t, T);
+disp(H_ransac);
+
 %% normal ransac
 H_ransac = ransac(S1, S2, s, N, t, T);
 disp(H_ransac);

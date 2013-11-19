@@ -5,5 +5,5 @@ im2 = imread('tum_mi_2.JPG');
 im2_gray = single(rgb2gray(im2));
 
 stitched_image = stiching(im1_gray, im2_gray);
-imagesc(stitched_image);
+imagesc(stitched_image), colormap gray, axis equal tight off;
 
