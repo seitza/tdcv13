@@ -6,15 +6,17 @@ function [ stitched_image ] = stiching( im1, im2 )
 
     % find matching interes points
     matches = vl_ubcmatch(descr1, descr2);
+    %ipoints1 = [descr1(2, matches(1,:)); descr1(1, matches(1,:))]';
     ipoints1 = (descr1(1:2,matches(1,:)))';
+    %ipoints2 = [descr2(2, matches(2,:)); descr2(1, matches(2,:))]';
     ipoints2 = (descr2(1:2,matches(2,:)))';
     
     % compute homography
     H = ransac(ipoints1, ipoints2, 4, 15, 0.5, 50);
         
     % compute new coordinates
-    trans_image = im2;
-    orig_image = im1;
+    trans_image = im1;
+    orig_image = im2;
     new_coords_trans = zeros(size(trans_image, 1), size(trans_image, 2), 2);
     new_coords_orig = zeros(size(orig_image, 1), size(orig_image, 1), 2);
     for i = 1:size(trans_image,1)
@@ -36,9 +38,9 @@ function [ stitched_image ] = stiching( im1, im2 )
     
     % find mimimum
     rows_min_new = min(min(new_coords_trans(:,:,1)));
-    rows_global_min = min(rows_min_new, 0);
+    rows_global_min = min(rows_min_new, 1);
     cols_min_new = min(min(new_coords_trans(:,:,2)));
-    cols_global_min = min(cols_min_new, 0);
+    cols_global_min = min(cols_min_new, 1);
     % add absolute minimum values to the coordinates
     new_coords_orig(:,:,1) = new_coords_orig(:,:,1) - rows_global_min + 1;
     new_coords_orig(:,:,2) = new_coords_orig(:,:,2) - cols_global_min + 1;
