@@ -10,7 +10,9 @@ function [ H ] = ransac( ipoints_reference, ipoints_warped, s, N, t, T )
         sample = randsample(n,s);    % random sample that represents the rows of the points to determine the homography
         H = normalized_dlt(ipoints_reference(sample,:), ipoints_warped(sample,:));
         trans = (H*ipoints_reference_with1')';
-        distance = sqrt((ipoints_reference(:,1)-trans(:,1)).^2 + (ipoints_reference(:,2)-trans(:,2)).^2 + (1-trans(:,3)).^2);
+        trans = trans./ repmat( trans(:,3), 1, 3 ); % normalize by third column (should be 1)
+        
+        distance = sqrt((ipoints_warped(:,1)-trans(:,1)).^2 + (ipoints_warped(:,2)-trans(:,2)).^2 + (1-trans(:,3)).^2);
         inliers = find(distance < t);
         if numel(inliers) > T
             largest_inliers = inliers;
