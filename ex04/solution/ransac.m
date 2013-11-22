@@ -39,12 +39,14 @@ S2i_max = [];
 n=1;
 
 while n <= N && not(adaptive) || N > s && adaptive
+
 %select 4 random sample indices
 if s > sizeS
     %unexpected
     return;
 end
 
+%draw random sample of size s
 is = randsample(sizeS,s);
 
 %compute H as init model
@@ -57,7 +59,7 @@ S1pn = S1p./repmat(S1p(:,3),1,3);
 %compute distances
 ds = sqrt(sum(((S2-S1pn).^2),2));
 
-%check for distance threshold
+%check for distance threshold t
 %get indices of Si
 dts = find(ds<t);
 
@@ -65,6 +67,8 @@ dts = find(ds<t);
 S1i = S1(dts,:);
 S2i = S2(dts,:);
 
+%check wether ransac can be stopped, as the number of distances below
+%threshold T is reached
 if size(dts,1) > T
     S1i_max = S1i;
     S2i_max = S2i;
