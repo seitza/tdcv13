@@ -1,16 +1,20 @@
-function [ matrix ] = create_affine_transformation( )
-%UNTITLED6 Summary of this function goes here
-%   Detailed explanation goes here
-    
-    new
-    
-    for i = 1:size(I,1)
-        for j = 1:size(I,2)
-            t = I()
-                        t = H*[j; i; 1];
-            t = t ./ t(3);
-        end
-    end
-
+function [ T ] = create_affine_transformation( )
+% create affine transformation matrix
+           
+        phi = rand*360;
+        theta = rand*360;
+        
+        R_phi = [cosd(phi), -sind(phi); sind(phi), cosd(phi)];
+        R_minus_phi = [cosd(-phi), -sind(-phi); sind(-phi), cosd(-phi)];
+        R_theta = [cosd(theta), -sind(theta); sind(theta), cosd(theta)];
+        
+        lambda1 = rand*10;
+        lambda2 = rand*10;
+        
+        D = [lambda1, 0; 0, lambda2];
+        
+        A = R_theta * R_minus_phi * D * R_phi;
+        
+        T = [A(1,:), 0; A(2,:), 0; 0,0,1];
 
 end
