@@ -1,4 +1,4 @@
-function [ I_warped ] = warping( I, H )
+function [ matrix ] = create_affine_transformation( )
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
     
