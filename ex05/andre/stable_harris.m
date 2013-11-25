@@ -11,7 +11,7 @@ counts = zeros(size(orig,1),1);
 %transforms = cell(1,n_rand);
 for i = 1:n_rand
     random = rand(4,1);
-    random = random.*[360;360;10;10];
+    random = random.*[360;360;0.9;0.9]+[0;0;0.6;0.6];
     
     H = gen_transform(random(1),random(2),random(3),random(4)); 
     
