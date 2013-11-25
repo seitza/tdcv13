@@ -8,8 +8,8 @@ function [ T ] = create_affine_transformation( )
         R_minus_phi = [cosd(-phi), -sind(-phi); sind(-phi), cosd(-phi)];
         R_theta = [cosd(theta), -sind(theta); sind(theta), cosd(theta)];
         
-        lambda1 = rand*10;
-        lambda2 = rand*10;
+        lambda1 = rand*0.9+0.6;
+        lambda2 = rand*0.9+0.6;
         
         D = [lambda1, 0; 0, lambda2];
         
