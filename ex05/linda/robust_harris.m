@@ -1,4 +1,4 @@
-function [ robust_points ] = robust_harris( I, n )
+function [ robust_points ] = robust_harris( I, n, threshold )
 % computes the most robust harris points
 % n is the number of transformations that should be used for the
 % computation
@@ -45,7 +45,7 @@ function [ robust_points ] = robust_harris( I, n )
  
     end
 
-    robust_points = keypoints(scores >= (n-1),:);
+    robust_points = keypoints(scores >= threshold,:);
     
 end
 

@@ -2,8 +2,11 @@ clear;
 
 I = rgb2gray(imread('../imagesequence/img1.ppm'));
 
-patch_size = 31;
+% find robust harris points which are a basis for computing the patches
+robust_keypoints = robust_harris(I, 10);
 
+% compute patches
+patch_size = 31;
 [patches, classes] = create_patches(I, patch_size);
 
 number_ferns = 20;
