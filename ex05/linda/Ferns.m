@@ -76,6 +76,7 @@ classdef Ferns < handle
             end
             total_histogram = prod(all_histograms);
             class = find(total_histogram == max(total_histogram));
+            class = class(1);       % take the fist class if there are more than 1 maxima
         end
         
     end
