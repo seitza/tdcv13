@@ -3,8 +3,6 @@ clear all;
 clc;
 
 I = imread('cameraman.tif');
-[X,Y] = ndgrid(1:50:size(I,2),1:25:size(I,1));
-
 % create affine transform
 theta = 0 + 2*pi*rand(1);
 phi = 0 + 2*pi*rand(1);
@@ -16,7 +14,7 @@ tform = affine2d(H);
 I_warp = imwarp(I,tform);
 [xlim, ylim] = outputLimits(tform, [1 size(I,2)], [1 size(I,1)]);
 
-warpHandle = figure();
+warpHandle = figure('Name', 'Warped image', 'NumberTitle', 'Off');
 imagesc(I_warp); axis equal tight off; colormap gray;
 hold on;
 
@@ -35,9 +33,7 @@ backX = round(backX);
 backY = round(backY);
 
 % plot stuff
-figure();
+figure('Name', 'Original image', 'NumberTitle', 'Off');
 imagesc(I); axis equal tight off; colormap gray;
 hold on;
 scatter(backX, backY, 25, 'rs', 'filled');
-
-
