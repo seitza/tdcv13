@@ -37,19 +37,21 @@ clear img;
 nr_robust_harris_points = 3;
 patch_size = [32; 32];
 
-nr_training_samples = 50;
+nr_training_samples = 150;
 
 % parameters for affine transformations
 angle_range = [0; 2*pi];
 lambda_range = [0.6; 1.5];
 
 % fern parameters
-number_ferns = 2;
-depth_single_fern = 3;
+number_ferns = 10;
+depth_single_fern = 10;
 
+
+%% find most robust harris points
 % iterations
 iterations = 15;
-%% find most robust harris points
+
 fprintf('Computing most robust harris points...\n');
 ref_img = imgs(:,:,1);
 robust_keypoints = find_most_robust_harris_points(ref_img, nr_robust_harris_points, ...
@@ -66,20 +68,41 @@ nr_classes = size(robust_keypoints,1);
 % hold off;
 
 %% train
-fprintf('Creating ferns...\n');
-fs = ferns(number_ferns, depth_single_fern, patch_size, nr_classes);
+% save the ferns by default
+ferns_file = sprintf('ferns_%d_%d_%d_%d_%dx%d.mat',number_ferns,depth_single_fern,nr_training_samples,nr_robust_harris_points,patch_size(1),patch_size(2));
+full_fern_path = strcat(pwd,filesep,ferns_file);
 
-for i=1:nr_training_samples
-    fprintf('Training fern with sample %d...\n', i);
-    % create patches for training
-    [train_patches, train_class_labels] = create_training_patches(ref_img, robust_keypoints, ...
-        patch_size, angle_range, lambda_range); 
-    % use them to train the ferns
-    fs.train(train_patches, train_class_labels);
+if exist(full_fern_path, 'file') == 2
+    % load that file!
+    fprintf('Trained fern for this configuration exists - loading file...');
+    load(full_fern_path, 'fs');
+    fprintf('\tloading complete!\n');
+else
+    % just do the training if no trained ferns is present
+    fprintf('Creating ferns for configuration:\n');
+    fprintf('\tNumber ferns: %d, Depth of single fern: %d\n', number_ferns, depth_single_fern);
+    fprintf('\tTraining samples: %d, no. robust Harris points: %d, patch size: %d x %d\n', nr_training_samples, nr_robust_harris_points, patch_size);
+    fprintf('\tThis may take a while...\n');
+    
+    fs = ferns(number_ferns, depth_single_fern, patch_size, nr_classes);
+
+    for i=1:nr_training_samples
+        fprintf('\tTraining fern with sample %d...\n', i);
+        % create patches for training
+        [train_patches, train_class_labels] = create_training_patches(ref_img, robust_keypoints, ...
+            patch_size, angle_range, lambda_range); 
+        % use them to train the ferns
+        fs.train(train_patches, train_class_labels);
+    end
+
+    % do not forget to normalize the ferns
+    fprintf('Normalizing fern...\n');
+    fs.normalize();
+    
+    fprintf('Saving fern under %s\n', full_fern_path);
+    save(full_fern_path, 'fs');
 end
 
-% do not forget to normalize the ferns
-fs.normalize();
 
 %% classify
 
