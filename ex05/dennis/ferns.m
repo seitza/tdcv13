@@ -51,6 +51,8 @@ classdef ferns < handle
             end
         end
         
+        % returns the index of the keypoint to which this patch
+        % is classified (starting at index 1)
         function class = classify(obj, patch)
             % multiply the posterior probabilities
             % of every fern

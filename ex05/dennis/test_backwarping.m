@@ -1,22 +1,43 @@
-I = double(imread('tire.tif'));
+close all;
+clear all;
+clc;
 
-% create meshgrid
-[meshX, meshY] = meshgrid(1:100:size(I,2), 1:100:size(I,1));
-gridPoints = [meshY(:), meshX(:), ones(length(meshX(:)), 1)];
+I = imread('cameraman.tif');
+[X,Y] = ndgrid(1:50:size(I,2),1:25:size(I,1));
 
-% apply some affine transformation
-H = create_affine_transform(pi/4, 0.0, [1;1], [0;0]);
+% create affine transform
+theta = 0 + 2*pi*rand(1);
+phi = 0 + 2*pi*rand(1);
+lambdas = 0.6 + (1.5-0.6).*rand(2,1);
+
+H = create_affine_transform(theta,phi, lambdas);
 tform = affine2d(H);
-I_warp = imwarp(I, tform);
 
-%% plot
-figure;
-imagesc(I), axis equal tight off, colormap gray;
-hold on;
-% scatter(meshY(:), meshX(:), 25, 'rs', 'filled');
-scatter(gridPoints(:,2), gridPoints(:,1), 25, 'bs', 'filled');
+I_warp = imwarp(I,tform);
+[xlim, ylim] = outputLimits(tform, [1 size(I,2)], [1 size(I,1)]);
 
-figure;
-imagesc(I_warp), axis equal tight off, colormap gray;
+warpHandle = figure();
+imagesc(I_warp); axis equal tight off; colormap gray;
 hold on;
-scatter(warped_grid(:,2), warped_grid(:,1), 25, 'rs', 'filled');
+
+% get points from user
+[userX, userY] = getpts(warpHandle);
+scatter(userX, userY, 25, 'rs', 'filled');
+hold off;
+
+% warp points back
+% set offset appropiate
+userX = userX + xlim(1) - 1;
+userY = userY + ylim(1) - 1;
+[backX, backY] = transformPointsInverse(tform, userX, userY);
+
+backX = round(backX);
+backY = round(backY);
+
+% plot stuff
+figure();
+imagesc(I); axis equal tight off; colormap gray;
+hold on;
+scatter(backX, backY, 25, 'rs', 'filled');
+
+
