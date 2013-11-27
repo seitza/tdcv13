@@ -8,6 +8,24 @@ classdef ferns < handle
         nr_of_classes = 400;
     end
     
+    methods (Static)
+        function obj = loadobj(obj)
+            if isstruct(obj)
+                new_obj = ferns;
+                new_obj.depth_of_fern = obj.depth_of_fern;
+                new_obj.number_of_ferns = obj.number_of_ferns;
+                new_obj.patch_size = obj.patch_size;
+                new_obj.nr_of_classes = obj.nr_of_classes;
+                
+                % test if this works
+                new_obj.single_ferns = obj.single_ferns;
+                obj = new_obj;
+            else
+                fprintf('can not load ferns object - no struct\n');
+            end
+        end
+    end
+    
     methods
         function obj = ferns(number_of_ferns, depth_of_fern, patch_size, nr_of_classes)
             % else use default parameters
@@ -52,6 +70,11 @@ classdef ferns < handle
         end
         
         function save_obj = saveobj(obj)
+            save_obj.depth_of_fern = obj.depth_of_fern;
+            save_obj.number_of_ferns = obj.number_of_ferns;
+            save_obj.patch_size = obj.patch_size;
+            save_obj.nr_of_classes = obj.nr_of_classes;
+            save_obj.single_ferns = obj.single_ferns;
         end
     end
     

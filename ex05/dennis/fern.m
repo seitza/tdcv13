@@ -1,7 +1,7 @@
 classdef fern < handle
     properties
         % default value
-        depth = 20;
+        depth = 10;
         patch_size = [30;30];
         
         % probabilities
@@ -32,7 +32,7 @@ classdef fern < handle
                 
                 obj = new_obj;
             else
-                fprintf('sorry, can not parse fern object');
+                fprintf('sorry, can not parse fern object\n');
             end
         end
    end
