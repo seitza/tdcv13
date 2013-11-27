@@ -26,13 +26,13 @@ stable_thres = 10;
 train_iter = 5000;
 %parameters for ransac
 %s number of randomly drawn points
-ransac_s = 1;
+ransac_s = 4;
 %t distance Threshold
-ransac_t = 50;
+ransac_t = 5;
 %T threshold for inliers in random set to terminate ransac
-ransac_T = 4;
+ransac_T = 50;
 %N max number of iterations
-ransac_N = 500;
+ransac_N = 50000;
 
 %% SOURCE DATA
 image = double(rgb2gray(imread('imagesequence/img1.ppm')));
@@ -41,7 +41,7 @@ im=image;
 
 %calculate stable points
 disp('START calculating stable harris points');%DEBUG
-stable_points = stable_harris(im, stable_rand, stable_thres);
+stable_points = stable_harris(im, stable_rand, stable_thres); %XY
 disp('stable harris points COMPLETE');%DEBUG
 disp(size(stable_points,1));
 
@@ -59,7 +59,8 @@ F.saveFile(fernfile);
 
 %% LOAD trained fern
 fernfile = 'fern.mat'
-F = fern_simple.loadFile(fernfile);
+F = ferns_simple.loadFile(fernfile);
+F = F.F;
 
 %% NORMALIZE !!!
 F.normalize();
@@ -74,41 +75,60 @@ half = floor(patchsize/2);
 %im = image;
 for i = 1:5
     im = double(rgb2gray(imread(['imagesequence/img',num2str(i+1),'.ppm'])));
-    %points = stable_harris(im, stable_rand, stable_thres);
-    points = corner(im,intmax);
-    points = points(:,[2,1]);
-    %disp(size(points))
+    %im=source_im;
+    %points = stable_harris(im, stable_rand, stable_thres-(0.25*stable_thres)); %XY
+    points = corner(im,1000);%XY
+    disp(size(points))
+    
+    figure;
+    imagesc(im),colormap gray;
+    hold on;
+    plot(points(:,1),points(:,2),'Xr');
+    
+    
     im = imfilter(im,fspecial('gaussian',5,0.5));
-    im = padarray(im,[half, half], -1);
-    N = imnoise(zeros(size(im)),'gaussian')*2*255;
-    im(im(:)==-1) = N(im(:)==-1);
+    impad = padarray(im,[half, half], -1);
+    N = imnoise(zeros(size(impad)),'gaussian')*2*255;
+    impad(impad(:)==-1) = N(impad(:)==-1);
     
     map_source = zeros(size(points,1),2);
     map_target = zeros(size(points,1),2);
     
     counter = 1;
     for s = 1:size(points,1)
-       p = points(s,:);
-       patch = im(p(1)-half+half:p(1)+half+half,p(2)-half+half:p(2)+half+half);
+       p = points(s,:);%XY
+       patch = impad(p(2)-half+half:p(2)+half+half,p(1)-half+half:p(1)+half+half);
        %imagesc(patch),colormap gray;
        %drawnow();
-       source_p = F.recognize(patch);
+       source_p = F.recognize(patch);%XY
        if source_p(1) > 0 && source_p(2) > 0
-           map_source(counter,:) = [source_p(1), source_p(2)];
-           map_target(counter,:) = [p(1),p(2)];
+           map_source(counter,:) = [source_p(1), source_p(2)]; %XY
+           map_target(counter,:) = [p(1),p(2)]; % XY
            counter = counter+1;
        end
     end
     map_source = map_source(1:counter-1,:);
     map_target = map_target(1:counter-1,:);
     
-    [dts_max, source_max, target_max, ransac_H] = ransac(map_source,map_target,ransac_s,ransac_t,ransac_T,ransac_N);
+    %disp([map_source map_target])
     
-    figure;
-    imagesc(im), colormap gray, axis equal tight;
-    hold on;
-    rect = [[1 1 0];[size(source_im,1) 1 0];[size(source_im,1) size(source_im,2) 0];[1 size(source_im,2) 0]]*ransac_H';
-    plot([rect(:,1);rect(1,1)],[rect(:,2);rect(1,2)],'Xr');
+    [dts_max, source_max, target_max, ransac_H] = ransac(map_source,map_target,ransac_t,ransac_T,ransac_s,ransac_N);
+    disp(size(target_max))
+    plot(target_max(:,1),target_max(:,2),'Og');
+    
+    ransac_H = ransac_H*(1/ransac_H(3,3));
+    disp(ransac_H)
+    %ransac_H(:,3) = [0;0;1];
+    %ransac_H(3,:) = [0,0,1];
+    
+    
+    %figure;
+    %imagesc(im), colormap gray, axis equal tight;
+    %hold on;
+    %rect = [[1 1 0];[size(source_im,1) 1 0];[size(source_im,1) size(source_im,2) 0];[1 size(source_im,2) 0]]*ransac_H';
+    rect = [[1 1 1];[size(source_im,2) 1 1];[size(source_im,2) size(source_im,1) 1];[1 size(source_im,1) 1]]*ransac_H';
+    rect = rect./repmat(rect(:,3),1,3)
+    plot([rect(:,1);rect(1,1)],[rect(:,2);rect(1,2)]);
     %disp(rect);
 end
 
