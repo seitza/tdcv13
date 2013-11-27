@@ -26,7 +26,7 @@ classdef ferns_simple < handle
             end
         end %train one
         
-        function point = recognize(F,patch)
+        function [point,prob] = recognize(F,patch)
             decision = ones(1,size(F.classifier,3));
             for n = 1:size(F.classifier,1)
                 dep = 0;
@@ -39,9 +39,9 @@ classdef ferns_simple < handle
                 end
                 decision = decision.*reshape(F.classifier(n,dep+1,:),1,size(F.classifier,3));
             end
-            [value,class] = max(decision(:));
+            [prob,class] = max(decision(:));
             %disp(class)
-            if value == 0
+            if prob == 0
                 point = [-1,-1];
             else
                 point = F.class2point(class,:);%XY
