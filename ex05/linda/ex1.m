@@ -1,9 +1,10 @@
 clear;
 close all;
+clc;
 
 I = rgb2gray(imread('../imagesequence/img1.ppm'));
 
-number_sample = 1000;
+number_sample = 5000;
 patch_size = 31;
 number_ferns = 20;
 depth = 10;
@@ -28,21 +29,41 @@ ferns.normalize();
 
 %% TRACKING
 % run over all images
-for image = 2:6
+for image = 2:2
     J = rgb2gray(imread(['../imagesequence/img' num2str(image) '.ppm']));
     % smooth the image with gaussian filter
     gauss = fspecial('gaussian', [5 5], 1.5);
     J = imfilter(J, gauss);
     % identify harris points and create patches
-    patches = create_classify_patches(J, patch_size);
+    [Jkeypoints, patches] = create_classify_patches(J, patch_size);
     % run over patches and classify them
     classes = zeros(1,size(patches, 3));
     for patch = 1:size(patches, 3)
         classes(patch) = ferns.classify(patches(:,:,patch));
     end
     
-    % use RANSAC to test which points fit
+    % create pairs of points
+    ipoints_J = zeros(size(patches,3), 2);
+    ipoints_I = zeros(size(patches,3), 2);
+    for p = 1:size(patches,3)
+        ipoints_J(p,:) = Jkeypoints(p,:);
+        ipoints_I(p,:) = robust_keypoints(classes(p), :);
+    end
+    disp([ipoints_I, ipoints_J]);
     
+    % use RANSAC to test which points fit
+    H = ransac(ipoints_I, ipoints_J, 4, 500, 1, 300);
+    % normalize H
+    H = H./H(3,3);
+    
+    % move the corners of I into J
+    corners = [1, 1, size(I,2), size(I,2); 1, size(I,1), 1, size(I,1); 1,1,1,1];%[x;y]
+    moved_corners = H*corners;
+    moved_corners = moved_corners ./ repmat( moved_corners(3,:), 3, 1 );
+    figure;
+    imagesc(J), colormap gray, axis equal tight off;
+    hold on;
+    plot([moved_corners(2,:), moved_corners(2,1)],[moved_corners(1,:), moved_corners(1,1)]);
 end
 
 

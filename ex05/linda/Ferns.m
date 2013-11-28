@@ -37,13 +37,12 @@ classdef Ferns < handle
                 % run over all patches
                 for p = 1:size(patches, 3)
                     % run over features and calculate binary_vector
-                    binary_path = zeros(1,size(F.features, 2));
+                    hist_number = 1;
                     for feat = 1:size(F.features, 2)
                         if patches(F.features(1,feat,fern), F.features(2,feat,fern), p) < patches(F.features(3,feat,fern), F.features(4,feat,fern), p)
-                            binary_path(feat) = 1;
+                            hist_number = hist_number+2^(feat-1);
                         end
                     end
-                    hist_number = int8(bi2de(binary_path))+1;
                     % increment histogram
                     F.histograms(hist_number, classes(p), fern) = F.histograms(hist_number, classes(p), fern) + 1;
                 end
@@ -66,13 +65,13 @@ classdef Ferns < handle
             all_histograms = zeros(size(F.features, 3), size(F.histograms, 2));
             for fern = 1:size(F.features, 3)
                     % run over features and calculate binary_vector
-                    binary_path = zeros(1,size(F.features, 2));
+                    hist_number = 1;
                     for feat = 1:size(F.features, 2)
                         if patch(F.features(1,feat,fern), F.features(2,feat,fern)) < patch(F.features(3,feat,fern), F.features(4,feat,fern))
-                            binary_path(feat) = 1;
+                            hist_number = hist_number+2^(feat-1);
                         end
                     end
-                    all_histograms(fern, :) = F.histograms(int8(bi2de(binary_path))+1, :, fern);
+                    all_histograms(fern, :) = F.histograms(hist_number, :, fern);
             end
             total_histogram = prod(all_histograms);
             class = find(total_histogram == max(total_histogram));

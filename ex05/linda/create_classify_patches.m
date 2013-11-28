@@ -1,7 +1,8 @@
-function [ patches ] = create_classify_patches( I, patch_size )
+function [ keypoints, patches ] = create_classify_patches( I, patch_size )
     
     % find harris points
-    keypoints = corner(I, intmax);
+    %keypoints = corner(I, intmax);
+    keypoints = robust_harris(I, 10, 10);
     % pad image and add noise
     half_patch_size = (patch_size-1)/2;
     I = padarray(I, [half_patch_size, half_patch_size], -1);
