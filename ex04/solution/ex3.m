@@ -40,7 +40,7 @@ hold on;
 h2 = vl_plotframe(f2(:,matches(2,:)));
 
 %run ransac
-[S1_m, S2_m, H] = ransac(S1,S2,1,50,4,500);
+[S1_m, S2_m, H] = ransac(S1,S2,1,10);%,4,500);
 disp(H);
 
 %% prepare visualization

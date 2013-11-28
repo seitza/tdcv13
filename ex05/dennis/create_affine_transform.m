@@ -3,7 +3,7 @@
 % - theta - one rotation
 % - phi - the other rotation
 % - lambdas (the scaling)
-function H = create_affine_transform(theta, phi, lambdas, translation)
+function H = create_affine_transform(theta, phi, lambdas)
     R_theta = [cos(theta) -sin(theta);
                sin(theta) cos(theta)];
            
@@ -17,8 +17,9 @@ function H = create_affine_transform(theta, phi, lambdas, translation)
          0 lambdas(2)];
      
     A = R_theta*R_minus_phi*D*R_phi;
-    H = horzcat(A, translation);
+    % we assume no translation
+    H = horzcat(A, [0; 0]);
     H = vertcat(H,zeros(1,3));
     H(3,3) = 1;
-    H = H';
+    %H = H';
 end
