@@ -4,7 +4,7 @@ clc;
 
 I = rgb2gray(imread('../imagesequence/img1.ppm'));
 
-number_sample = 5000;
+number_sample = 1000;
 patch_size = 31;
 number_ferns = 20;
 depth = 10;
@@ -57,7 +57,7 @@ for image = 2:2
     H = H./H(3,3);
     
     % move the corners of I into J
-    corners = [1, 1, size(I,2), size(I,2); 1, size(I,1), 1, size(I,1); 1,1,1,1];%[x;y]
+    corners = [1, size(I,2), size(I,2), 1; 1, 1, size(I,1), size(I,1); 1,1,1,1];%[x;y]
     moved_corners = H*corners;
     moved_corners = moved_corners ./ repmat( moved_corners(3,:), 3, 1 );
     figure;
