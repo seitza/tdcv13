@@ -69,11 +69,16 @@ F.normalize();
 source_im = image;
 figure;
 imagesc(source_im), colormap gray;
+source_rect = [[100 100 1];[size(source_im,2)-100 100 1];[size(source_im,2)-100 size(source_im,1)-100 1];[100 size(source_im,1)-100 1]];
+hold on;
+plot([source_rect(:,1);source_rect(1,1)],[source_rect(:,2);source_rect(1,2)],'LineWidth',4);
 
 half = floor(patchsize/2);
 %DEBUG
 %im = image;
 for i = 1:5
+    rect = source_rect;
+    
     im = double(rgb2gray(imread(['imagesequence/img',num2str(i+1),'.ppm'])));
     %im=source_im;
     %points = stable_harris(im, stable_rand, stable_thres-(0.25*stable_thres)); %XY
@@ -160,9 +165,19 @@ for i = 1:5
     %imagesc(im), colormap gray, axis equal tight;
     %hold on;
     %rect = [[1 1 0];[size(source_im,1) 1 0];[size(source_im,1) size(source_im,2) 0];[1 size(source_im,2) 0]]*ransac_H';
-    rect = [[1 1 1];[size(source_im,2) 1 1];[size(source_im,2) size(source_im,1) 1];[1 size(source_im,1) 1]]*ransac_H';
+    rect = rect*ransac_H';
     rect = rect./repmat(rect(:,3),1,3)
     plot([rect(:,1);rect(1,1)],[rect(:,2);rect(1,2)],'LineWidth',4);
+    
+    figure;
+    imagesc([source_im,im]), colormap gray, axis equal tight;
+    hold on;
+    p_target_temp = p_target;
+    p_target_temp(:,1) = p_target_temp(:,1)+size(source_im,2);
+    for z = 1:100%size(p_source,1)
+        line([p_source(z,1),p_target_temp(z,1)],[p_source(z,2),p_target_temp(z,2)]);
+    end
+    
     %disp(rect);
 end
 
