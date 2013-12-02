@@ -52,7 +52,8 @@ classdef weakClassifier
         
         % returns labels for test data
         function [test_labels] = test(obj, test_data)
-            test_labels = zeros(1,size(test_data,1));
+            % partition data
+            test_labels = ((test_data(:,obj.dimension_threshold) <= obj.threshold)*2)-1;
         end
     end
     
