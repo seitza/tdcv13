@@ -23,21 +23,20 @@ classdef AdaboostClassifier < handle
             M = size(obj.weakClassifier,1);
             
             % initialize weighting coefficients w
-            w_init = ones(N,1)/N;
-            w_iter = w_init;
+            w = ones(N,1)/N;
             for m = 1:M
-                obj.weakClassifier{m}.train(trainingExamples,labels,w_iter);
-                
-                right_dim = trainingExamples(:,obj.weakClassifier{m}.dimensionThreshold);
-                right_dim_lower = right_dim < obj.weakClassifier{m}.threshold;
-                right_dim_higher = right_dim >= obj.weakClassifier{m}.threshold;
-                
-                e = (sum((labels(right_dim_lower)~=-1).*w_iter(right_dim_lower))+sum((labels(right_dim_higher)~=1).*w_iter(right_dim_higher)))/sum(w_iter);
-                
-                obj.alpha(m) = log((1-e)/e);
+                obj.weakClassifier{m}.train(trainingExamples,labels,w); 
             
-                w_iter = w_iter.*exp(obj.alpha(m).*(labels~=((right_dim_lower.*-2)+1)));
+                c = ((trainingExamples(:,obj.weakClassifier{m}.dimensionThreshold)<obj.weakClassifier{m}.threshold)-0.5)*-2;
+                e = sum(w.*(c~=labels));
+                e = e/sum(w);
+            
+                a = log((1-e)/e);
+                obj.alpha(m) = a;
                 
+                w = w.*exp(a.*(c~=labels));
+                %w = w/sum(w);
+            
             end
             
         end % train
