@@ -1,52 +1,59 @@
 classdef WeakClassifier < handle
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
-    
+
     properties
         dimensionThreshold
         threshold
     end
     
-    methods (Access = public)
-        % constructor
-        function obj = WeakClassifier()
-            
+    methods
+        function W = WeakClassifier()
         end
         
-        % training
-        function obj = train(obj, trainingExamples, labels, importanceWeight)
-            N = size(trainingExamples, 1);
-            dim = size(trainingExamples, 2);
-            minError = Inf;
-            % set different borders and evaluate the minimal error
-            for d = 1:dim       % dimension
-                for t = 1:N     % threshold
-                    thres = trainingExamples(t,dim);
-                    % calculate error for this threshold setting
-                    error = 0;
-                    for sample = 1:N
-                        if ((trainingExamples(sample, dim) <= thres && labels(sample) ~= -1) || (trainingExamples(sample, dim) > thres && labels(sample) ~= 1))
-                            error = error + importanceWeight(sample);
-                        end
+        function alpha = train(obj, trainingExamples, labels, importanceWeights)
+            % find best thresholds
+            N = size(trainingExamples, 1);  % number samples
+            dim = size(trainingExamples,2);
+            
+            minError = intmax;
+            for d = 1:dim
+                for t = 1:N
+                    thres = trainingExamples(t, d);
+                    % compute error
+                    if (d == 1)
+                        b = trainingExamples(:, d) <= thres;
+                    else
+                        b = trainingExamples(:, d) >= thres;
                     end
-                    %disp(error);
+                    error = sum(importanceWeights((b==1 & labels ~= -1) | (b == 0  & labels ~= 1)));
+                    % update min error if necessary
                     if error < minError
+                        minError = error;
                         obj.dimensionThreshold = d;
                         obj.threshold = thres;
-                        minError = error;
                     end
                 end
             end
             
-            disp(['min eroor is ' num2str(minError)]);
-
+            epsilon = minError/sum(importanceWeights);
+            disp(epsilon);
+            alpha = log((1-epsilon)/epsilon);
+            
         end
         
         % testing
         function y = test(obj, testExamples)
             y = zeros(size(testExamples,1), 1); %Nx1
-            y(testExamples(:, obj.dimensionThreshold) <= obj.threshold) = -1;
-            y(testExamples(:, obj.dimensionThreshold) > obj.threshold) = 1;
+            if (obj.dimensionThreshold == 1)
+                y(testExamples(:, obj.dimensionThreshold) <= obj.threshold) = -1;
+                y(testExamples(:, obj.dimensionThreshold) > obj.threshold) = 1;
+            else
+                y(testExamples(:, obj.dimensionThreshold) >= obj.threshold) = -1;
+                y(testExamples(:, obj.dimensionThreshold) < obj.threshold) = 1;
+            end
+        end
+        
+        function w = display(w)
+            disp([num2str(w.dimensionThreshold) '   ' num2str(w.threshold)]);
         end
         
     end

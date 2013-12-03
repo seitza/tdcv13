@@ -1,67 +1,58 @@
 classdef AdaboostClassifier < handle
-    %ADABOOSTCLASSIFIER Summary of this class goes here
-    %   Detailed explanation goes here
     
     properties
-        weakClassifier  % 1xM
-        alpha           % 1xM
+        weakClassifier
+        alpha
     end
     
-    methods (Access = public)
-        % constructor
-        function obj = AdaboostClassifier(numberWeakClassifier)
-            for i = numberWeakClassifier :-1:1
+    methods
+        %constructor
+        function obj = AdaboostClassifier(numberWeakClassifiers)
+            obj.alpha = zeros(1,numberWeakClassifiers);
+            for i = numberWeakClassifiers :-1:1
                 a(i) = WeakClassifier();
             end
             obj.weakClassifier = a;
-            obj.alpha = zeros(1,numberWeakClassifier);
         end
         
-        % training
-        function obj = train(obj, trainingExamples, labels)
-            N = size(trainingExamples, 1);      % number of samples
-            M = size(obj.weakClassifier, 2);    % number of classifier to be trained
-
-            importanceWeight = ones(N, 1);
-            importanceWeight = importanceWeight./N;
+        function  train(obj, trainingExamples, labels)
+            N = size(trainingExamples, 1);  % number samples
+            M = size(obj.weakClassifier, 2);   % number weak classifier
+            
+            importanceWeights = ones(N,1)./N;
             
             for m = 1:M
-                % create classifier
-                disp([num2str(m) '. Classifier #####################################################']);
-                obj.weakClassifier(m).train(trainingExamples, labels, importanceWeight);
-                
-                % determine epsilon
-                epsilon = 0;
-                for sample = 1:N
-                    if ((trainingExamples(sample, obj.weakClassifier(m).dimensionThreshold) <= obj.weakClassifier(m).threshold && labels(sample) ~= -1) || (trainingExamples(sample, obj.weakClassifier(m).dimensionThreshold) > obj.weakClassifier(m).threshold && labels(sample) ~= 1))
-                        epsilon = epsilon + importanceWeight(sample);
-                    end
+                obj.alpha(m) = obj.weakClassifier(m).train(trainingExamples, labels, importanceWeights);
+                % update weights
+                if (obj.weakClassifier(m).dimensionThreshold == 1)
+                    b = trainingExamples(:, obj.weakClassifier(m).dimensionThreshold) <= obj.weakClassifier(m).threshold;
+                else
+                    b = trainingExamples(:, obj.weakClassifier(m).dimensionThreshold) >= obj.weakClassifier(m).threshold;
                 end
-                epsilon = epsilon / sum(importanceWeight);
-
-                % determine alpha
-                obj.alpha(m) = log((1-epsilon)/epsilon);
-                
-                % update importanceWeights
+                I = (b==1 & labels ~= -1) | (b == 0  & labels ~= 1);
                 for n = 1:N
-                    I = (trainingExamples(n, obj.weakClassifier(m).dimensionThreshold) <= obj.weakClassifier(m).threshold && labels(n) ~= -1) || (trainingExamples(n, obj.weakClassifier(m).dimensionThreshold) > obj.weakClassifier(m).threshold && labels(n) ~= 1);
-                    %disp(I);
-                    importanceWeight(n) = importanceWeight(n)*exp(obj.alpha(m)*I);
+                    importanceWeights(n) = importanceWeights(n)*exp(obj.alpha(m)*I(n));
                 end
-                
             end
             
         end
         
         % testing
-        function labels = test(obj, testingExamples)
-            sums = zeros(size(testingExamples,1), 1);   %Nx1
-            for m = 1:size(obj.weakClassifier, 2)
-                y = obj.weakClassifier(m).test(testingExamples);
-                sums = sums + (obj.alpha(m) .* y);
+        function labels = test(obj, testExamples)
+            sums = zeros(size(testExamples,1), 1);
+            for m = 1:size(obj.weakClassifier,2)
+                y = obj.weakClassifier(m).test(testExamples);
+                sums = sums + (obj.alpha(m).*y);
             end
             labels = sign(sums);
         end
+        
+        function obj = dispAdaboost(obj)
+            for m = 1:size(obj.weakClassifier, 2)
+                obj.weakClassifier(m).display();
+            end
+        end
+        
     end
     
 end
