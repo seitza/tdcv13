@@ -18,8 +18,6 @@ classdef WeakClassifier < handle
             %importance weights: nx1
             
             minError = intmax;
-            minDimension = -1;
-            minThreshold = -1;
             
             N = size(trainingExamples,1);
             dimensions = size(trainingExamples,2);
@@ -31,18 +29,16 @@ classdef WeakClassifier < handle
                     J = sum([(sortedLabels(1:n,1)~=-1).*sortedWeights(1:n,1);(sortedLabels(n+1:N,1)~=1).*sortedWeights(n+1:N,1)]);
                     if J < minError
                        minError = J;
-                       minDimension = d;
-                       minThreshold = trainingExamples(I(n),d);
+                       obj.dimensionThreshold = d;
+                       obj.threshold = trainingExamples(I(n),d);
                     end
                 end %thresholds
             end %dimensions
-            obj.threshold = minThreshold;
-            obj.dimensionThreshold = minDimension;
             
         end % training
         
         function res=test(obj, testSamples)
-            res = ((testSamples(:,obj.dimensionThreshold)<obj.threshold)-0.5)*2;
+            res = ((testSamples(:,obj.dimensionThreshold)<obj.threshold)-0.5)*-2;
         end % testing
     end
     

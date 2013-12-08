@@ -4,16 +4,17 @@ close all;
 clc;
 
 %% load datasets
-nr_datasets = 3;
+nr_datasets = 1;
 nr_weak_classifiers = 10;
 
 datasets = cell(nr_datasets,1);
 classifiers = cell(nr_datasets, 1);
+datasets{1} = [-3,1,-1; -2,-1,-1; 0,5,-1; 1,8,-1; 3,6,-1; -1,3,1 ; -1,-2,1; 1,1,1; 4,-1,1; 4,7,1];
 
-for i=1:nr_datasets
-    datasets{i} = load(strcat('data',int2str(i), '.mat'));
-    datasets{i} = datasets{i}.dat;
-end
+% for i=1:nr_datasets
+%     datasets{i} = load(strcat('data',int2str(i), '.mat'));
+%     datasets{i} = datasets{i}.dat;
+% end
 
 %% visualize datasets
 for i=1:nr_datasets
