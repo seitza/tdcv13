@@ -20,7 +20,7 @@ for data = 1:3
 
     labels = dat(:,3);
     
-    adaboost = AdaboostClassifier(20);
+    adaboost = AdaboostClassifier(300);
     adaboost.train(dat(:,1:2), labels);
     predicted_labels = adaboost.test(dat(:,1:2));
 
@@ -30,32 +30,32 @@ for data = 1:3
     minY = min(dat(:,2));
     maxY = max(dat(:,2));
 
-    for i = 1:size(adaboost.weakClassifier,2)
-        if adaboost.weakClassifier(i).dimensionThreshold == 2
-            line([minX, maxX],[adaboost.weakClassifier(i).threshold, adaboost.weakClassifier(i).threshold]);
-        else
-            line([adaboost.weakClassifier(i).threshold, adaboost.weakClassifier(i).threshold], [minY, maxY]);
-        end
-    end
+%     for i = 1:size(adaboost.weakClassifier,2)
+%         if adaboost.weakClassifier(i).dimensionThreshold == 2
+%             line([minX, maxX],[adaboost.weakClassifier(i).threshold, adaboost.weakClassifier(i).threshold]);
+%         else
+%             line([adaboost.weakClassifier(i).threshold, adaboost.weakClassifier(i).threshold], [minY, maxY]);
+%         end
+%     end
 
     scatter(dat(predicted_labels == -1, 1), dat(predicted_labels == -1, 2),'b');
     scatter(dat(predicted_labels == 1, 1), dat(predicted_labels == 1, 2),'r');
 
-    adaboost.dispAdaboost();
+    %adaboost.dispAdaboost();
     
-    %plot error
-    number_steps = 20;
-    error = zeros(1, number_steps);
-    for n = 1:number_steps
-        adaboost = AdaboostClassifier(n);
-        adaboost.train(dat(:,1:2), labels);
-        predicted_labels = adaboost.test(dat(:,1:2));
-
-        error(n) = sum(labels ~= predicted_labels);
-    end
-    xrange = 1:1:number_steps;
-    figure;
-    plot(xrange, error);
+%     %plot error
+%     number_steps = 200;
+%     error = zeros(1, number_steps);
+%     for n = 1:number_steps
+%         adaboost = AdaboostClassifier(n);
+%         adaboost.train(dat(:,1:2), labels);
+%         predicted_labels = adaboost.test(dat(:,1:2));
+% 
+%         error(n) = sum(labels ~= predicted_labels);
+%     end
+%     xrange = 1:1:number_steps;
+%     figure;
+%     plot(xrange, error);
     
     
 end
