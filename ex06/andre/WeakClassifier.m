@@ -5,6 +5,7 @@ classdef WeakClassifier < handle
     properties
         dimensionThreshold
         threshold
+        direction
     end
     
     methods
@@ -12,33 +13,55 @@ classdef WeakClassifier < handle
             
         end %constructor
         
-        function train(obj, trainingExamples, labels, importanceWeights)
-            %training examples: array numberxdimension
-            %labels: arrays nx1
-            %importance weights: nx1
+        function train(obj, dat, lbl, w)
+            %dat: array numberxdimension
+            %lbl: arrays nx1
+            %w: nx1
             
-            minError = intmax;
+            tmpE = intmax;
+            tmpDir = 0;
+            tmpDim = 0;
+            tmpThres = 0;
             
-            N = size(trainingExamples,1);
-            dimensions = size(trainingExamples,2);
+            dimensions = size(dat,2);
             for d = 1:dimensions
-                [Y,I] = sort(trainingExamples(:,d));
-                sortedLabels = labels(I,1);
-                sortedWeights = importanceWeights(I,1);
-                for n = 1:N-1
-                    J = sum([(sortedLabels(1:n,1)~=-1).*sortedWeights(1:n,1);(sortedLabels(n+1:N,1)~=1).*sortedWeights(n+1:N,1)]);
-                    if J < minError
-                       minError = J;
-                       obj.dimensionThreshold = d;
-                       obj.threshold = trainingExamples(I(n),d);
+                cutP = unique(dat(:,d));
+                
+                label=(repmat(dat(:,d),1,size(cutP,1))<repmat(cutP',size(dat(:,d),1),1))*2-1;
+                label_inv=(repmat(dat(:,d),1,size(cutP,1))>=repmat(cutP',size(dat(:,d),1),1))*2-1;
+
+                err=sum((label==repmat(lbl,1,size(cutP,1))).*repmat(w,1,size(cutP,1)),1);
+                [minE1,pos1]=min(err);
+                err=sum((label_inv==repmat(lbl,1,size(cutP,1))).*repmat(w,1,size(cutP,1)),1);
+                [minE2,pos2]=min(err);
+                if(minE2<minE1)
+                    if(minE2<tmpE)
+                        tmpE = minE2;
+                        tmpDir=-1;
+                        tmpDim=d;
+                        tmpThres=cutP(pos2);
                     end
-                end %thresholds
+                else
+                    if(minE1<tmpE)
+                        tmpE = minE1;
+                        tmpDir=1;
+                        tmpDim=d;
+                        tmpThres=cutP(pos1);
+                    end
+                end
             end %dimensions
             
+            obj.direction=tmpDir;
+            obj.dimensionThreshold=tmpDim;
+            obj.threshold=tmpThres;
         end % training
         
         function res=test(obj, testSamples)
-            res = ((testSamples(:,obj.dimensionThreshold)<obj.threshold)-0.5)*-2;
+            if(obj.direction==1)
+                res = ((testSamples(:,obj.dimensionThreshold)<obj.threshold)-0.5)*-2;
+            else
+                res = ((testSamples(:,obj.dimensionThreshold)>=obj.threshold)-0.5)*-2;
+            end
         end % testing
     end
     
