@@ -11,7 +11,7 @@ data{1} = 'data1.mat';
 data{2} = 'data2.mat';
 data{3} = 'data3.mat';
 
-N = 10;
+N = 300;
 
 for d = 1:size(data,1);
     %laod
@@ -33,9 +33,9 @@ for d = 1:size(data,1);
     
     for i = 1:size(ada.weakClassifier,1)
         if ada.weakClassifier{i}.dimensionThreshold == 1
-            plot([100 -100],[ada.weakClassifier{i}.threshold ada.weakClassifier{i}.threshold])
-        else
             plot([ada.weakClassifier{i}.threshold ada.weakClassifier{i}.threshold],[100 -100])
+        else
+            plot([100 -100],[ada.weakClassifier{i}.threshold ada.weakClassifier{i}.threshold])
         end
     end
     
