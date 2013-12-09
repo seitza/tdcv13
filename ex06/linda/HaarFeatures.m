@@ -61,6 +61,11 @@ classdef HaarFeatures
                 tmin = mean-abs(mean-minPos)*(R-5)/50;
                 tmax = mean+abs(maxPos-mean)*(R-5)/50;
                 pos_output(f) = response(f) > tmin && response(f) < tmax;
+%                 if response(f) > tmin && response(f) < tmax
+%                     pos_output(f) = 1;
+%                 else
+%                     pos_output(f) = -1;
+%                 end
                 % multiply the 1 or 0 with alpha
                 score(f) = obj.featureAttributes(6,f)*pos_output(f);
             end
