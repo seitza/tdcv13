@@ -13,58 +13,54 @@ classdef WeakClassifier < handle
             
         end %constructor
         
-        function train(obj, trainingExamples, labels, importanceWeights)
-            %training examples: array numberxdimension
-            %labels: arrays nx1
-            %importance weights: nx1
+        function train(obj, dat, lbl, w)
+            %dat: array numberxdimension
+            %lbl: arrays nx1
+            %w: nx1
             
-            minError = intmax;
+            tmpE = intmax;
+            tmpDir = 0;
+            tmpDim = 0;
+            tmpThres = 0;
             
-            N = size(trainingExamples,1);
-            dimensions = size(trainingExamples,2);
-            %for d = 1:dimensions
-            d = randi(dimensions,1)
-            cutPoints = unique(trainingExamples(:,d));
-            %N = size(cutPoints,2)
-                %[Y,I] = sort(trainingExamples(:,d));
-                %sortedLabels = labels(I,1);
-                sortedLabels=labels;
-                %sortedWeights = importanceWeights(I,1);
-                sortedWeights = importanceWeights;
+            dimensions = size(dat,2);
+            for d = 1:dimensions
+                cutP = unique(dat(:,d));
                 
-                label=(repmat(trainingExamples(:,d),1,size(cutPoints,1))<repmat(cutPoints',size(trainingExamples(:,d),1),1))*2-1;
-                label_inv=(repmat(trainingExamples(:,d),1,size(cutPoints,1))>=repmat(cutPoints',size(trainingExamples(:,d),1),1))*2-1;
+                label=(repmat(dat(:,d),1,size(cutP,1))<repmat(cutP',size(dat(:,d),1),1))*2-1;
+                label_inv=(repmat(dat(:,d),1,size(cutP,1))>=repmat(cutP',size(dat(:,d),1),1))*2-1;
 
-                err=sum((label==repmat(labels,1,size(cutPoints,1))).*repmat(importanceWeights,1,size(cutPoints,1)),1);
-                [miner,pos]=min(err);
-                err=sum((label_inv==repmat(labels,1,size(cutPoints,1))).*repmat(importanceWeights,1,size(cutPoints,1)),1);
-                [miner2,pos]=min(err);
-                if(miner2<miner)
-                    obj.direction=-1;
+                err=sum((label==repmat(lbl,1,size(cutP,1))).*repmat(w,1,size(cutP,1)),1);
+                [minE1,pos1]=min(err);
+                err=sum((label_inv==repmat(lbl,1,size(cutP,1))).*repmat(w,1,size(cutP,1)),1);
+                [minE2,pos2]=min(err);
+                if(minE2<minE1)
+                    if(minE2<tmpE)
+                        tmpE = minE2;
+                        tmpDir=-1;
+                        tmpDim=d;
+                        tmpThres=cutP(pos2);
+                    end
                 else
-                    obj.direction=1;
+                    if(minE1<tmpE)
+                        tmpE = minE1;
+                        tmpDir=1;
+                        tmpDim=d;
+                        tmpThres=cutP(pos1);
+                    end
                 end
-                
-                obj.dimensionThreshold=d;
-                obj.threshold=cutPoints(pos);
-                
-                %                 for n = 1:N-1
-%                     J = sum([(sortedLabels(1:n,1)~=-1).*sortedWeights(1:n,1);(sortedLabels(n+1:N,1)~=1).*sortedWeights(n+1:N,1)]);
-%                     if J < minError
-%                        minError = J;
-%                        obj.dimensionThreshold = d;
-%                        obj.threshold = trainingExamples(I(n),d);
-%                     end
-%                 end %thresholds
-%             %end %dimensions
-      
+            end %dimensions
+            
+            obj.direction=tmpDir;
+            obj.dimensionThreshold=tmpDim;
+            obj.threshold=tmpThres;
         end % training
         
         function res=test(obj, testSamples)
             if(obj.direction==1)
                 res = ((testSamples(:,obj.dimensionThreshold)<obj.threshold)-0.5)*-2;
             else
-                res = ((testSamples(:,obj.dimensionThreshold)>obj.threshold)-0.5)*-2;
+                res = ((testSamples(:,obj.dimensionThreshold)>=obj.threshold)-0.5)*-2;
             end
         end % testing
     end

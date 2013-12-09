@@ -17,7 +17,7 @@ classdef AdaboostClassifier < handle
             obj.alpha = zeros(numberWeakClassifiers,1);
         end %constructor
         
-        function train(obj,trainingExamples,labels)
+        function errors = train(obj,trainingExamples,labels)
             %number of training examples
             N = size(trainingExamples,1);
             %number of classifiers
@@ -40,8 +40,10 @@ classdef AdaboostClassifier < handle
                 w = w/sum(w);
             
                 %figure;
-                %scatter(trainingExamples(:,1),trainingExamples(:,2),w(:,1)*10000,c+1);
-                %    input('c');
+%                 close;
+%                 scatter(trainingExamples(:,1),trainingExamples(:,2),w(:,1)*10000,c+1);
+%                 drawnow();
+%                 input('c');
             %close all;
                 
             end
@@ -51,6 +53,17 @@ classdef AdaboostClassifier < handle
         function res=test(obj, testSamples)
             class = zeros(size(testSamples,1),1);
             for i = 1:size(obj.weakClassifier,1)
+               class = class+(obj.alpha(i).*obj.weakClassifier{i}.test(testSamples)); 
+            end
+            res = sign(class); 
+        end % test
+        
+        function res=test_N(obj, testSamples,N)
+            class = zeros(size(testSamples,1),1);
+            if N>size(obj.weakClassifier,1)
+               N = size(obj.weakClassifier,1); 
+            end
+            for i = 1:N
                class = class+(obj.alpha(i).*obj.weakClassifier{i}.test(testSamples)); 
             end
             res = sign(class); 
