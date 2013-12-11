@@ -29,28 +29,28 @@ classdef HaarFeatures
                 % compute response depending on the feature type
                 switch obj.featureType(f)
                     case 1
-                        r1 = image(r+h-1, c+(w/2)-1) - image(r+h-1, c) - image(r, c+(w/2)-1) + image(r,c);
-                        r2 = image(r+h-1, c+w-1) - image(r+h-1, c+(w/2)) - image(r, c+w-1) + image(r,c+(w/2));
+                        r1 = image(r+h-1, c+(w/2)-1) - image(r+h-1, c-1) - image(r-1, c+(w/2)-1) + image(r-1,c-1);
+                        r2 = image(r+h-1, c+w-1) - image(r+h-1, c+(w/2)-1) - image(r-1, c+w-1) + image(r-1,c+(w/2)-1);
                         response(f) = r1+r2;
                     case 2
-                        r1 = image(r+(h/2)-1, c+w-1) - image(r+(h/2)-1, c) - image(r, c+w-1) + image(r,c);
-                        r2 = image(r+h-1, c+w-1) - image(r+h-1, c) - image(r+h/2, c+w-1) + image(r+h/2, c);
+                        r1 = image(r+(h/2)-1, c+w-1) - image(r+(h/2)-1, c-1) - image(r-1, c+w-1) + image(r-1,c-1);
+                        r2 = image(r+h-1, c+w-1) - image(r+h-1, c-1) - image(r+h/2-1, c+w-1) + image(r+h/2-1, c-1);
                         response(f) = r1+r2;
                     case 3
-                        r1 = image(r+h-1, c+w/3-1) - image(r+h-1,c) - image(r,c+w/3-1) + image(r,c);
-                        r2 = image(r+h-1, c+2*w/3-1) - image(r+h-1, c+w/3) - image(r,c+2*w/3-1) + image(r,c+w/3);
-                        r3 = image(r+h-1, c+w-1) - image(r+h-1, c+2*w/3) - image(r,c+w-1) + image(r,c+2*w/3);
+                        r1 = image(r+h-1, c+w/3-1) - image(r+h-1,c-1) - image(r-1,c+w/3-1) + image(r-1,c-1);
+                        r2 = image(r+h-1, c+2*w/3-1) - image(r+h-1, c+w/3-1) - image(r-1,c+2*w/3-1) + image(r-1,c+w/3-1);
+                        r3 = image(r+h-1, c+w-1) - image(r+h-1, c+2*w/3-1) - image(r-1,c+w-1) + image(r-1,c+2*w/3-1);
                         response(f) = r1-r2+r3;
                     case 4
-                        r1 = image(r+h/3-1, c+w-1) - image(r+h/3-1, c) - image(r, c+w-1) + image(r,c);
-                        r2 = image(r+2*h/3-1,c+w-1) - image(r+2*h/3-1,c) - image(r+h/3, c+w-1) + image(r+h/3,c);
-                        r3 = image(r+h-1, c+w-1) - image(r+h-1,c) - image(r+2*h/3, c+w-1) + image(r+2*h/3,c);
+                        r1 = image(r+h/3-1, c+w-1) - image(r+h/3-1, c-1) - image(r-1, c+w-1) + image(r-1,c-1);
+                        r2 = image(r+2*h/3-1,c+w-1) - image(r+2*h/3-1,c-1) - image(r+h/3-1, c+w-1) + image(r+h/3-1,c-1);
+                        r3 = image(r+h-1, c+w-1) - image(r+h-1,c-1) - image(r+2*h/3-1, c+w-1) + image(r+2*h/3-1,c-1);
                         response(f) = r1-r2+r3;
                     case 5
-                        r1 = image(r+h/2-1, c+w/2-1) - image(r+h/2-1,c) - image(r,c+w/2-1) + image(r,c);
-                        r2 = image(r+h/2-1, c+w-1) - image(r+h/2-1,c+w/2) - image(r,c+w-1) + image(r,c+w/2);
-                        r3 = image(r+h-1,c+w/2-1) - image(r+h-1,c) - image(r+h/2,c+w/2-1) + image(r+h/2,c);
-                        r4 = image(r+h-1,c+w-1) - image(r+h-1,c+w/2) - image(r+h/2,c+w-1) + image(r+h/2,c+w/2);
+                        r1 = image(r+h/2-1, c+w/2-1) - image(r+h/2-1,c-1) - image(r-1,c+w/2-1) + image(r-1,c-1);
+                        r2 = image(r+h/2-1, c+w-1) - image(r+h/2-1,c+w/2-1) - image(r-1,c+w-1) + image(r-1,c+w/2-1);
+                        r3 = image(r+h-1,c+w/2-1) - image(r+h-1,c-1) - image(r+h/2-1,c+w/2-1) + image(r+h/2-1,c-1);
+                        r4 = image(r+h-1,c+w-1) - image(r+h-1,c+w/2-1) - image(r+h/2-1,c+w-1) + image(r+h/2-1,c+w/2-1);
                         response(f) = r1-r2+r3-r4;
                 end
                 % apply threshold
@@ -61,11 +61,6 @@ classdef HaarFeatures
                 tmin = mean-abs(mean-minPos)*(R-5)/50;
                 tmax = mean+abs(maxPos-mean)*(R-5)/50;
                 pos_output(f) = response(f) > tmin && response(f) < tmax;
-%                 if response(f) > tmin && response(f) < tmax
-%                     pos_output(f) = 1;
-%                 else
-%                     pos_output(f) = -1;
-%                 end
                 % multiply the 1 or 0 with alpha
                 score(f) = obj.featureAttributes(6,f)*pos_output(f);
             end
