@@ -6,9 +6,14 @@ function [ f ] = energy_function( A, ralpha, rbeta, rgamma, t1, t2, t3, M, m )
     Rgamma = [1,0,0; 0, cos(rgamma), -sin(rgamma); 0, sin(rgamma), cos(rgamma)];
     
     R = Ralpha*Rbeta*Rgamma;
+    T = [t1;t2;t3];
+    RT = [R,T];
     
-    
-
+    f = 0;
+    for i =1:size(M,2)
+        t = (A * RT * M(:,i)) - m(:, i);
+        f = f + sqrt(t(1)^2 + t(2)^2 + t(3)^2);
+    end
 
 end
 
