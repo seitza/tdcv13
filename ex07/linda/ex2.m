@@ -5,7 +5,7 @@ load('ex1_result');
 
 % run over image sequence
 for t = 1:1 %44
-    It = single(rgb2gray(imread(['img_sequence/' form_digits(t,4) '.png'])));
+    It = single(rgb2gray(imread(num2str(t,'img_sequence/%04d.png'))));
     [ft, dt] = vl_sift(It);
     
     % debugging
