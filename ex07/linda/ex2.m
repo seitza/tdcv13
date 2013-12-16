@@ -9,7 +9,7 @@ if exist('vl_version') == 0
     run('/Users/Linda/Documents/MATLAB/vlfeat-0.9.17/toolbox/vl_setup.m');
 end
 
-correspondences = cell(1, 44);
+correspondences = cell(1, num_images-1);
 % run over image sequence
 for t = 1:44 %44
     It = single(rgb2gray(imread(num2str(t,'img_sequence/%04d.png'))))./255;
@@ -36,6 +36,8 @@ for t = 1:44 %44
     for i = 1:size(inliers_t0, 1)
         line([inliers_t0(i,1), inliers_ti(i,1)+size(I0,2)], [inliers_t0(i,2), inliers_ti(i,2)]);
     end
+    scatter(inliers_t0(:,1), inliers_t0(:,2), 'Xg');
+    scatter(inliers_ti(:,1)+size(I0,2), inliers_ti(:,2), 'Xg');
     saveas(h, num2str(t, 'img_sequence/%04d_correspondences'), 'png');
 
 

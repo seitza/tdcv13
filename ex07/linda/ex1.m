@@ -2,6 +2,8 @@ clc; clear; close all;
 
 %%
 
+num_images = 45;
+
 % setup sift path
 if exist('vl_version') == 0
     disp('loading sift implementation...');
@@ -36,11 +38,13 @@ valid_frames = f0(1,:) > min_x & f0(1,:) <= max_x & ...
 
 f0_rect = f0(:, valid_frames);
 d0_rect = d0(:, valid_frames);
-scatter(f0(1,:), f0(2,:), 'Xg');
+scatter(f0_rect(1,:), f0_rect(2,:), 'Xg');
 
 % compute corresponding 3D points
-m = [f0(1:2, :); ones(1,size(f0, 2))];
+m = [f0_rect(1:2, :); ones(1,size(f0_rect, 2))];
 M = A\m;
+% homogenious coordinates
+M = [M; ones(1,size(f0_rect, 2))];
 
 save('ex1_result');
 

@@ -1,11 +1,18 @@
-function [ f ] = energy_function( A, ralpha, rbeta, rgamma, t1, t2, t3, M, m )
+function [ f ] = energy_function( A, rt, M, m )
+
+    ra = rt(1);
+    rb = rt(2);
+    rg = rt(3);
+    t1 = rt(4);
+    t2 = rt(5);
+    t3 = rt(6);
 
     % create R using the Euler representation
-    Ralpha = [cos(ralpha), -sin(ralpha), 0; sin(ralpha), cos(ralpha), 0; 0,0,1];
-    Rbeta = [cos(rbeta), 0, sin(rbeta); 0,1,0; -sin(rbeta), 0, cos(rbeta)];
-    Rgamma = [1,0,0; 0, cos(rgamma), -sin(rgamma); 0, sin(rgamma), cos(rgamma)];
+    Ra = [cos(ra), -sin(ra), 0; sin(ra), cos(ra), 0; 0,0,1];
+    Rb = [cos(rb), 0, sin(rb); 0,1,0; -sin(rb), 0, cos(rb)];
+    Rg = [1,0,0; 0, cos(rg), -sin(rg); 0, sin(rg), cos(rg)];
     
-    R = Ralpha*Rbeta*Rgamma;
+    R = Ra*Rb*Rg;
     T = [t1;t2;t3];
     RT = [R,T];
     
