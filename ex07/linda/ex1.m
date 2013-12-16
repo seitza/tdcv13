@@ -3,10 +3,6 @@ clc; clear; close all;
 %%
 A = [472.3 0.64, 329.0; 0, 471.0, 268.3; 0, 0, 1]; % internal calibration matrix, fixed
 
-R = [1,0,0; 0,1,0; 0,0,1]; % initial rotation matrix
-
-T = [0;0;0]; % initial translation vector
-
 I0 = single(rgb2gray(imread('img_sequence/0000.png')));
 
 % compute SIFT features
