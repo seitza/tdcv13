@@ -16,11 +16,11 @@ function [ f ] = energy_function( A, rt, M, m )
     T = [t1;t2;t3];
     RT = [R,T];
     
-    f = 0;
-    for i =1:size(M,2)
-        t = (A * RT * M(:,i)) - m(:, i);
-        f = f + sqrt(t(1)^2 + t(2)^2 + t(3)^2);
-    end
+    f = sum(sqrt(sum((A*RT*M-m).^2)));
+    
+%     syms e(A, RT, M, m);
+%     e(A, RT, M, m) = sum(sqrt(sum((A*RT*M-m).^2)));
+%     J = [];
 
 end
 
