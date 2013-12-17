@@ -12,8 +12,7 @@ function [ e ] = energy( A, RT, M, m )
     T = [t1;t2;t3];
     RT = [R,T];
     
-    t = (A * RT * M) - m;
-    e = sum(sqrt(sum(t.^2,1)));
+    e = sum(sum(((A * RT * M) - m).^2,1));
 
 end
 
