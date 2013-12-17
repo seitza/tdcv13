@@ -71,7 +71,7 @@ for t = 1:NUM_PIC
    matches = vl_ubcmatch(d0(:,in),dt);
    
    [tform,in0,int] = estimateGeometricTransform(m0(1:2,matches(1,:))',mt(1:2,matches(2,:))','affine',...
-      'MaxNumTrials',2000,...
+      'MaxNumTrials',5000,...
       'MaxDistance',8);
    
    template_in{t} = in0;
@@ -112,9 +112,42 @@ for i = 1:NUM_PIC
     pose(i+1,:) = RT;
     
     R = rotation(RT(1),RT(2),RT(3));
-    P = -R'*[RT(4);RT(5);RT(6)];
+    
+    %exclusion of camera intrinsics
+    %R = A\R;
+    
+    %ortho normalization
+    %[U,S,V] = svd(R);
+    %R = U*V';
+    
+    %pose estimation
+    P = (-(R'))*[RT(4);RT(5);RT(6)];
     pos(i+1,:) = P';
 end
+
+figure;
+plot(pos(:,1),pos(:,2));
+hold on;
+text(pos(:,1),pos(:,2),num2str((0:44)'));
+plot(0,0,'Xr');
+grid on;
+title('1-2');
+
+figure;
+plot(pos(:,1),pos(:,3));
+hold on;
+text(pos(:,1),pos(:,3),num2str((0:44)'));
+plot(0,0,'Xr');
+grid on;
+title('1-3');
+
+figure;
+plot(pos(:,2),pos(:,3));
+hold on;
+text(pos(:,2),pos(:,3),num2str((0:44)'));
+plot(0,0,'Xr');
+grid on;
+title('2-3');
 
 figure;
 plot3(pos(:,1),pos(:,2),pos(:,3));
