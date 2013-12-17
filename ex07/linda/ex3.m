@@ -18,11 +18,7 @@ for t = 1:num_images-1
     % create R using the Euler representation
     ra = parameters(t+1,1); rb = parameters(t+1,2); rg = parameters(t+1,3);
     t1 = parameters(t+1,4); t2 = parameters(t+1,5); t3 = parameters(t+1,6);
-    Ra = [cos(ra), -sin(ra), 0; sin(ra), cos(ra), 0; 0,0,1];
-    Rb = [cos(rb), 0, sin(rb); 0,1,0; -sin(rb), 0, cos(rb)];
-    Rg = [1,0,0; 0, cos(rg), -sin(rg); 0, sin(rg), cos(rg)];
-    
-    R = Ra*Rb*Rg;
+    R = rotation_matrix(ra, rb, rg);
     T = [t1;t2;t3];
 
     camera_coord(t+1, :) = (-R'*T)';
@@ -36,3 +32,6 @@ text(camera_coord(:,1), camera_coord(:,2), camera_coord(:,3), num2str((0:44)'));
 plot3(0,0,0,'Xr');
 plot3(camera_coord(num_images,1), camera_coord(num_images,2), camera_coord(num_images,3), 'Xg');
 grid on;
+xlabel('x');
+ylabel('y');
+zlabel('z');
