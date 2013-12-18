@@ -13,6 +13,5 @@ function [ e ] = energy( A, RT, M, m )
     RT = [R,T];
     
     e = sum(sum(((A * RT * M) - m).^2,1));
-
 end
 

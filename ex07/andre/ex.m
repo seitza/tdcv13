@@ -71,7 +71,7 @@ for t = 1:NUM_PIC
    matches = vl_ubcmatch(d0(:,in),dt);
    
    [tform,in0,int] = estimateGeometricTransform(m0(1:2,matches(1,:))',mt(1:2,matches(2,:))','affine',...
-      'MaxNumTrials',5000,...
+      'MaxNumTrials',2000,...
       'MaxDistance',8);
    
    template_in{t} = in0;
@@ -117,11 +117,11 @@ for i = 1:NUM_PIC
     %R = A\R;
     
     %ortho normalization
-    %[U,S,V] = svd(R);
-    %R = U*V';
+    [U,S,V] = svd(R);
+    R = U*V';
     
     %pose estimation
-    P = (-(R'))*[RT(4);RT(5);RT(6)];
+    P = (-R')*[RT(4);RT(5);RT(6)];
     pos(i+1,:) = P';
 end
 
@@ -155,3 +155,7 @@ hold on;
 text(pos(:,1),pos(:,2),pos(:,3),num2str((0:44)'));
 plot3(0,0,0,'Xr');
 grid on;
+
+%% ex04
+syms f(A,ra,rb,rc,t1,t2,t3,M,m);
+f(A,ra,rb,rc,t1,t2,t3,M,m) = sum(sum((A*[cos(ra), -sin(ra), 0; sin(ra), cos(ra), 0; 0,0,1]*[cos(rb), 0, sin(rb); 0,1,0; -sin(rb), 0, cos(rb)]*[1,0,0; 0, cos(rc), -sin(rc); 0, sin(rc), cos(rc)]*M-m)^2));
