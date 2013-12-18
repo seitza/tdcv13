@@ -35,3 +35,33 @@ grid on;
 xlabel('x');
 ylabel('y');
 zlabel('z');
+
+figure;
+plot(camera_coord(:,1),camera_coord(:,2));
+hold on;
+text(camera_coord(:,1),camera_coord(:,2),num2str((0:44)'));
+plot(0,0,'Xr');
+grid on;
+title('1-2');
+xlabel('x');
+ylabel('y');
+
+figure;
+plot(camera_coord(:,1),camera_coord(:,3));
+hold on;
+text(camera_coord(:,1),camera_coord(:,3),num2str((0:44)'));
+plot(0,0,'Xr');
+grid on;
+title('1-3');
+xlabel('x');
+ylabel('z');
+
+figure;
+plot(camera_coord(:,2),camera_coord(:,3));
+hold on;
+text(camera_coord(:,2),camera_coord(:,3),num2str((0:44)'));
+plot(0,0,'Xr');
+grid on;
+title('2-3');
+xlabel('y');
+ylabel('z');
