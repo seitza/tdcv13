@@ -35,4 +35,4 @@ for t = 1:44
    end
 end
 
-save('ex2_results');
+save('ex2_result');
