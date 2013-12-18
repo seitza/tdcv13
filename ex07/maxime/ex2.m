@@ -34,3 +34,5 @@ for t = 1:44
       plot([inliers0(i,1),inlierst(i,1)+size(I0,2)],[inliers0(i,2),inlierst(i,2)],'g+');
    end
 end
+
+save('ex2_results');
