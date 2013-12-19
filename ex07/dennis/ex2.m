@@ -33,6 +33,9 @@ figure_handles = zeros(1,nr_images);
 m_ti = cell(nr_images,1);
 m_ti{1} = m_t0;
 
+m_t0_inliers = cell(nr_images,1);
+m_t0_inliers{1} = m_t0;
+
 for i=2:nr_images
     fprintf('looking at image %d\n', i);
     cur_img = img_seq(:,:,i);
@@ -54,7 +57,8 @@ for i=2:nr_images
 
     % save the correct point correspondences
     fprintf('saving correctly matched SIFT points\n');
-    m_ti{i} = m_ti_matches;
+    m_ti{i} = inliers_m_t1;
+    m_t0_inliers{i} = inliers_m_t0;
     
     % display all inliers
     if create_figures_ex2 == 1
@@ -76,4 +80,4 @@ for i=2:nr_images
     end
 end
 fprintf('saving correct point correspondences\n');
-save('correct_point_correspondences.mat', 'm_ti');
+save('correct_point_correspondences.mat', 'm_ti', 'm_t0_inliers');
