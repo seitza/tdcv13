@@ -34,22 +34,17 @@ for j = 1:number_update_matrices
     max_shift = 3*j;
     n = size(grid,1);
     % first sample in original image
-    intensities = Img(sub2ind(size(Img),grid(:,2), grid(:,1)));
-    normed_intensities = normIntensities(intensities);
-    samples = zeros(size(grid,1),3,n+1);
-    samples(:,:,1) = [grid, normed_intensities];
-    P = zeros(8,n);       % corner displacements
-    for i = 2:n+1
-        [samples(:,:,i), P(:,i-1)] = randomTransformation(Img, corners, max_shift, grid);
-    end
-
     % compute I as the normalized intensity differences from each warped sample
     % to the original grid
+    intensities = Img(sub2ind(size(Img),grid(:,2), grid(:,1)));
+    normed_intensities = normIntensities(intensities);
+    sample = [grid, normed_intensities];
+    P = zeros(8,n);       % corner displacements
     I = zeros(size(grid,1),n);
     for i = 1:n
-        I(:,i) = samples(:,3,1) - samples(:,3,i+1);
+        [rand_warped_sample, P(:,i)] = randomTransformation(Img, corners, max_shift, grid);
+        I(:,i) = rand_warped_sample(:,3) - sample(:,3);
     end
-
     A(:,:,j) = P*I'*inv(I*I');
 end
 
