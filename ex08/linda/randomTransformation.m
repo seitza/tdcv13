@@ -7,6 +7,8 @@ function [ warped_sample, P ] = randomTransformation( I, corners, max_shift, gri
         rand_shift = randi([-1*max_shift, max_shift], 1);
         corners_shifted(i) = corners(i)+rand_shift;
         P(i) = rand_shift;
+%         corners_shifted(i) = corners(i)+rand_shift(i);
+%         P(i) = rand_shift(i);
     end
     P = P(:);
     
@@ -23,20 +25,22 @@ function [ warped_sample, P ] = randomTransformation( I, corners, max_shift, gri
     ymin = min(grid_warped(:,2));
     ymax = max(grid_warped(:,2));
     [m,n] = size(I);
-    pad = max([1-xmin, 1-ymin, xmax-n, ymax-m]);
+    pad = round(min([1+xmin, 1+ymin, n-xmax, m-ymax]))*-1;
+    %disp(pad);
     I_padded = I;
     if pad > 0
         I_padded = padarray(I, [pad, pad]);
+        intensities = I_padded(sub2ind(size(I_padded), grid_warped(:,2)+pad, grid_warped(:,1)+pad));
+    else
+        intensities = I_padded(sub2ind(size(I_padded), grid_warped(:,2), grid_warped(:,1)));
     end
-    
-    intensities = I_padded(ind2sub(grid_warped(:,1)-pad, grid_warped(:,2)-pad));
     
     normed_intensities = normIntensities(intensities);
     
     warped_sample = [grid_warped(:,1:2), normed_intensities];
     
     % add some random noise
-    
+    warped_sample(:,3) = warped_sample(:,3) + rand(size(warped_sample(:,3)));
     
 %     % backwarp the image
 %     [m,n] = size(I);
