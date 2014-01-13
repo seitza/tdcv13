@@ -1,4 +1,4 @@
-function [ W ] = warp( I, R, warp_rect, MD, GD )
+function [ W ] = warp( I, R, warp_rect, GD )
 % I image
 % R region = 4X2 (x,y)
 % W warp
@@ -15,21 +15,21 @@ s = size(I);
 
 bw = [x(:),y(:),ones(size(y(:),1),1)]*H';
 bw = bw./repmat(bw(:,3),1,3);
-bw = round(bw);
+bw = round(bw(:,1:2));
 
-p = min(min(min(bw)),min([s(2),s(1),1]-max(bw)))*-1;
-p = p+1;
-I = padarray(I,[p,p],0);
-bw= bw+p;
+%get out of bounds backwarps
+oob = sum(bw > repmat([s(2),s(1)],size(bw,1),1),2)>0 | sum(bw < 1,2)>0;
+%preserve out of bounds backwarps from failing hard
+bw(oob,:) = repmat([1,1],size(bw(oob),1),1);
 
-if p > 1
-   disp([p size(I) min(bw) max(bw)]); 
-end
 ind = sub2ind(size(I),bw(:,2),bw(:,1));
 
 W = I(ind);
 W = (W-mean(W))/std(W);
+W = W+rand(size(W));
 
-%TODO randomization missing!!
+%rewrite preserved out of bound entries to random
+W(oob) = rand(size(W(oob)));
+
 end
 
