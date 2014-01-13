@@ -1,3 +1,7 @@
+close all;
+clc;
+clear;
+%%
 
 Img = double(rgb2gray(imread('image_sequence/0000.png')));
 
@@ -45,26 +49,44 @@ end
 
 
 %% Application of the tracking
-curr_grid = grid;
+
+% visualize first image
+figure;
+imagesc(Img);
+hold on;
+colormap gray;
+plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)]);
+
+p = zeros(8,1);
+% curr_grid = grid;
 for i = 2:44
-    It = rgb2gray(imread(num2str(t,'img_sequence/%04d.png')));
+    It = double(rgb2gray(imread(num2str(i,'image_sequence/%04d.png'))));
     
     for a = number_update_matrices:-1:1
         
         for j = 1:5
+            
+            patch = corners + reshape(p, 4,2);
+            
+            H = normalized_dlt(corners, patch);
+            
+            % warp the grid
+            grid_warped = (H*[grid, ones(size(grid,1),1)]')';
+            grid_warped = round(grid_warped ./ repmat(grid_warped(:,3), 1,3));
+            
             % find intensities covered by the warped grid
-            xmin = min(curr_grid(:,1));
-            xmax = max(curr_grid(:,1));
-            ymin = min(curr_grid(:,2));
-            ymax = max(curr_grid(:,2));
-            [m,n] = size(I);
-            pad = max([1-xmin, 1-ymin, xmax-n, ymax-m]);
-            I_padded = I;
+            xmin = min(grid_warped(:,1));
+            xmax = max(grid_warped(:,1));
+            ymin = min(grid_warped(:,2));
+            ymax = max(grid_warped(:,2));
+            [m,n] = size(It);
+            pad = round(max([1-xmin, 1-ymin, xmax-n, ymax-m]));
+            I_padded = It;
             if pad > 0
                 I_padded = padarray(I, [pad, pad]);
             end
-
-            curr_intensities = I_padded(ind2sub(curr_grid(:,1)-pad, curr_grid(:,2)-pad));
+            
+            curr_intensities = I_padded(ind2sub(grid_warped(:,1)-pad, grid_warped(:,2)-pad));
 
             curr_normed_intensities = normIntensities(curr_intensities);
 
@@ -75,12 +97,25 @@ for i = 2:44
             move = A(:,:,a)*differences;
 
             % 
+            patch_new = corners + reshape(move, 4,2);
+            
+            Hc = H;
+            Hu = normalized_dlt(patch, patch_new);
+            Hn = Hc*Hu;
 
-
-            % update grid
-            [x, y] = meshgrid(min(move(1:4,1)):5:max(move(1:4,1)), min(move(5:8,2)):5:max(move(5:8,2)));
-            curr_grid = [x(:), y(:)];
+            % update patch / corners
+            p = (Hn*[corners,ones(4,1)]')';
+            p = p ./ repmat(p(:,3), 1,3);
+            p = p(:,1:2)-corners;
+            p = p(:);
         end
     end
+    % visualize each image
+    figure;
+    imagesc(It);
+    hold on;
+    colormap gray;
+    plot_patch = corners + reshape(p,4,2);
+    plot([plot_patch(:,1); plot_patch(1,1)],[plot_patch(:,2); plot_patch(1,2)]);
 end
 
