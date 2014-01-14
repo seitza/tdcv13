@@ -15,6 +15,12 @@ function [ warped_sample, P ] = randomTransformation( I, corners, max_shift, gri
     % compute the transformation
     H = normalized_dlt(corners, corners_shifted);
     
+    %debugging
+    corners
+    corners_shifted
+    t = (H*[corners, ones(size(corners,1),1)]')';
+    round(t ./ repmat(t(:,3), 1,3))
+    
     % warp the grid
     grid_warped = (H*[grid, ones(size(grid,1),1)]')';
     grid_warped = round(grid_warped ./ repmat(grid_warped(:,3), 1,3));

@@ -32,7 +32,7 @@ A = zeros(8,size(grid,1), number_update_matrices);
 for j = 1:number_update_matrices
     % create n warped samples
     max_shift = 3*j;
-    n = size(grid,1);
+    n = 3*size(grid,1);
     % first sample in original image
     % compute I as the normalized intensity differences from each warped sample
     % to the original grid
@@ -83,9 +83,12 @@ for i = 1:44
             xmin = min(grid_warped(:,1));
             xmax = max(grid_warped(:,1));
             ymin = min(grid_warped(:,2));
-            ymax = max(grid_warped(:,2));
-            [m,n] = size(It);
-            pad = round(min([1+xmin, 1+ymin, n-xmax, m-ymax]))*-1;
+            ymax = max(grid_warped(:,2))
+            [m,n] = size(It)
+            disp(m);
+            disp(ymax);
+            border = [1+xmin, 1+ymin, n-xmax, m-ymax]
+            pad = round(min(border))*-1;
             disp(['pad=' num2str(pad)]);
             I_padded = It;
             if pad > 0
@@ -104,7 +107,7 @@ for i = 1:44
             move = A(:,:,a)*differences;
 
             % 
-            patch_new = corners + reshape(move, 4,2);
+            patch_new = patch + reshape(move, 4,2);
             
             Hc = H;
             Hu = normalized_dlt(patch, patch_new);
