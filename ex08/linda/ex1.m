@@ -16,8 +16,12 @@ xDL = xUL;
 yDL = yDR;
 
 corners = [xUL, yUL; xUR, yUR; xDR, yDR; xDL, yDL];
+GD = 5;     % grid density
+NUMPIC = 44;        % number images
+number_update_matrices = 10;
 
-[X_rect, Y_rect] = meshgrid(min(corners(:,1)):5:max(corners(:,1)), min(corners(:,2)):5:max(corners(:,2)));
+
+[X_rect, Y_rect] = meshgrid(min(corners(:,1)):GD:max(corners(:,1)), min(corners(:,2)):GD:max(corners(:,2)));
 grid = [X_rect(:), Y_rect(:)];
 
 % % debugging
@@ -27,25 +31,29 @@ grid = [X_rect(:), Y_rect(:)];
 
 %% learning A
 disp('Start Learning');
-number_update_matrices = 10;
+
+% first sample in original image
+% compute I as the normalized intensity differences from each warped sample
+% to the original grid
+intensities = Img(sub2ind(size(Img),grid(:,2), grid(:,1)));
+normed_intensities = normIntensities(intensities);
+sample = [grid, normed_intensities];
+sample(:,3) = sample(:,3) + rand(size(sample(:,3)));
+
 A = zeros(8,size(grid,1), number_update_matrices);
 for j = 1:number_update_matrices
-    % create n warped samples
+    % create n warped samples (n >= #grid points)
     max_shift = 3*j;
+    disp(['#####################     ' num2str(max_shift) '    ############################']);
     n = 3*size(grid,1);
-    % first sample in original image
-    % compute I as the normalized intensity differences from each warped sample
-    % to the original grid
-    intensities = Img(sub2ind(size(Img),grid(:,2), grid(:,1)));
-    normed_intensities = normIntensities(intensities);
-    sample = [grid, normed_intensities];
+
     P = zeros(8,n);       % corner displacements
-    I = zeros(size(grid,1),n);
+    I = zeros(size(grid,1),n);  % differences
     for i = 1:n
         [rand_warped_sample, P(:,i)] = randomTransformation(Img, corners, max_shift, grid);
         I(:,i) = rand_warped_sample(:,3) - sample(:,3);
     end
-    A(:,:,j) = P*I'*inv(I*I');
+    A(:,:,j) = (P*I')*inv(I*I');
 end
 
 
@@ -60,8 +68,8 @@ plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)]);
 drawnow();
 
 p = zeros(8,1);
-% curr_grid = grid;
-for i = 1:44
+curr_grid = grid;
+for i = 1:NUMPIC
     
     disp(['image' num2str(i)]);
     
@@ -71,45 +79,33 @@ for i = 1:44
         disp(['a=' num2str(a)]);
         for j = 1:5
             disp(['j=' num2str(j)]);
+            
+            % visualize image
+%             figure;
+%             imagesc(It), colormap gray;
+%             hold on;
+%             plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)], 'c-');
+            
             patch = corners + reshape(p, 4,2);
+            % plot previous patch
+%             plot([patch(:,1); patch(1,1)],[patch(:,2); patch(1,2)], 'b-');
             
-            H = normalized_dlt(corners, patch);
-            
-            % warp the grid
-            grid_warped = (H*[grid, ones(size(grid,1),1)]')';
-            grid_warped = round(grid_warped ./ repmat(grid_warped(:,3), 1,3));
-            
-            % find intensities covered by the warped grid
-            xmin = min(grid_warped(:,1));
-            xmax = max(grid_warped(:,1));
-            ymin = min(grid_warped(:,2));
-            ymax = max(grid_warped(:,2))
-            [m,n] = size(It)
-            disp(m);
-            disp(ymax);
-            border = [1+xmin, 1+ymin, n-xmax, m-ymax]
-            pad = round(min(border))*-1;
-            disp(['pad=' num2str(pad)]);
-            I_padded = It;
-            if pad > 0
-                I_padded = padarray(I, [pad, pad]);
-                curr_intensities = I_padded(sub2ind(size(I_padded), grid_warped(:,2)+pad, grid_warped(:,1)+pad));
-            else
-                curr_intensities = I_padded(sub2ind(size(I_padded), grid_warped(:,2), grid_warped(:,1)));
-            end
-            
-            curr_normed_intensities = normIntensities(curr_intensities);
+            warped_sample = warpSample( It, grid, corners, patch );
 
             % subtract intensities
-            differences = curr_normed_intensities - normed_intensities;
+            differences = warped_sample(:,3) - sample(:,3);
 
             % compute movement
             move = A(:,:,a)*differences;
 
             % 
-            patch_new = patch + reshape(move, 4,2);
+%             patch_new = corners + reshape(move, 4,2);
+            patch_new = reshape(move, 4,2);
+
+            % plot previous patch
+%             plot([patch_new(:,1); patch_new(1,1)],[patch_new(:,2); patch_new(1,2)], 'r-');
             
-            Hc = H;
+            Hc = normalized_dlt(corners, patch);
             Hu = normalized_dlt(patch, patch_new);
             Hn = Hc*Hu;
 
@@ -122,11 +118,11 @@ for i = 1:44
     end
     % visualize each image
     figure;
-    imagesc(It);
+    imagesc(It), colormap gray;
     hold on;
-    colormap gray;
     plot_patch = corners + reshape(p,4,2);
-    plot([plot_patch(:,1); plot_patch(1,1)],[plot_patch(:,2); plot_patch(1,2)]);
+    plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)], 'c-');
+    plot([plot_patch(:,1); plot_patch(1,1)],[plot_patch(:,2); plot_patch(1,2)], 'g-');
     drawnow();
 end
 
