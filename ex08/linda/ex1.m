@@ -68,7 +68,8 @@ plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)]);
 drawnow();
 
 p = zeros(8,1);
-curr_grid = grid;
+prev_intensities = normed_intensities;
+%curr_grid = grid;
 for i = 1:NUMPIC
     
     disp(['image' num2str(i)]);
@@ -81,29 +82,30 @@ for i = 1:NUMPIC
             disp(['j=' num2str(j)]);
             
             % visualize image
-%             figure;
-%             imagesc(It), colormap gray;
-%             hold on;
-%             plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)], 'c-');
+            figure;
+            imagesc(It), colormap gray;
+            hold on;
+            plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)], 'c-');
             
             patch = corners + reshape(p, 4,2);
             % plot previous patch
-%             plot([patch(:,1); patch(1,1)],[patch(:,2); patch(1,2)], 'b-');
+            plot([patch(:,1); patch(1,1)],[patch(:,2); patch(1,2)], 'b-');
             
             warped_sample = warpSample( It, grid, corners, patch );
 
             % subtract intensities
-            differences = warped_sample(:,3) - sample(:,3);
+%             differences = warped_sample(:,3) - sample(:,3);
+            differences = warped_sample(:,3) - prev_intensities;
 
             % compute movement
             move = A(:,:,a)*differences;
 
             % 
-%             patch_new = corners + reshape(move, 4,2);
-            patch_new = reshape(move, 4,2);
+            patch_new = corners + reshape(move, 4,2);
+%             patch_new = patch + reshape(move, 4,2);
 
             % plot previous patch
-%             plot([patch_new(:,1); patch_new(1,1)],[patch_new(:,2); patch_new(1,2)], 'r-');
+            plot([patch_new(:,1); patch_new(1,1)],[patch_new(:,2); patch_new(1,2)], 'r-');
             
             Hc = normalized_dlt(corners, patch);
             Hu = normalized_dlt(patch, patch_new);
@@ -121,8 +123,9 @@ for i = 1:NUMPIC
     imagesc(It), colormap gray;
     hold on;
     plot_patch = corners + reshape(p,4,2);
-    plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)], 'c-');
+    plot([corners(:,1); corners(1,1)],[corners(:,2); corners(1,2)], 'b-');
     plot([plot_patch(:,1); plot_patch(1,1)],[plot_patch(:,2); plot_patch(1,2)], 'g-');
     drawnow();
+    close all;
 end
 

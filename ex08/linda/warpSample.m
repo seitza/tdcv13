@@ -56,20 +56,23 @@ function [ warped_sample ] = warpSample( I, grid, corners, corners_shifted )
     
     % find intensities covered by the warped grid
     % pad the image to handle out of bounds patches
-    xmin = min(grid_warped(:,1));
-    ymin = min(grid_warped(:,2));
-    xmax = max(grid_warped(:,1));
-    ymax = max(grid_warped(:,2));
-    pad = (round(min([xmin, ymin, n-xmax+1, m-ymax+1]))*-1)+1;
-    %disp(pad);
-    I_padded = I;
-    if pad > 0
-        I_padded = padarray(I, [pad, pad]);
-        ind = sub2ind(size(I_padded), grid_warped(:,2)+pad, grid_warped(:,1)+pad);
-    else
-        ind = sub2ind(size(I_padded), grid_warped(:,2), grid_warped(:,1));
-    end
-    intensities = I_padded(ind);
+%     xmin = min(grid_warped(:,1));
+%     ymin = min(grid_warped(:,2));
+%     xmax = max(grid_warped(:,1));
+%     ymax = max(grid_warped(:,2));
+%     pad = (round(min([xmin, ymin, n-xmax+1, m-ymax+1]))*-1)+1;
+%     %disp(pad);
+%     I_padded = I;
+%     if pad > 0
+%         I_padded = padarray(I, [pad, pad]);
+%         ind = sub2ind(size(I_padded), grid_warped(:,2)+pad, grid_warped(:,1)+pad);
+%     else
+%         ind = sub2ind(size(I_padded), grid_warped(:,2), grid_warped(:,1));
+%     end
+%     intensities = I_padded(ind);
+
+    intensities = interp2(1:size(I,2),1:size(I,1),I,grid_warped(:,1),grid_warped(:,2),'linear',0);  
+
     normed_intensities = normIntensities(intensities);
     
     warped_sample = [grid_warped(:,1:2), normed_intensities];
