@@ -1,4 +1,4 @@
-function [ warped_sample ] = warpSample( I, grid, corners, corners_shifted )
+function [ warped_sample ] = warpSample( I, grid, H )
 
 %     figure;
 %     imagesc(I), colormap gray;
@@ -6,10 +6,7 @@ function [ warped_sample ] = warpSample( I, grid, corners, corners_shifted )
 %     plot([corners_shifted(:,1); corners_shifted(1,1)], [corners_shifted(:,2); corners_shifted(1,2)], 'r-');
 %     plot([corners(:,1); corners(1,1)], [corners(:,2); corners(1,2)], 'b-');
 
-    [n,m] = size(I);
-
-    % compute the transformation
-    H = normalized_dlt(corners, corners_shifted);
+%     [n,m] = size(I);
     
 %     % different approach: warp the image!
 %     Hinv = inv(H);
@@ -51,7 +48,7 @@ function [ warped_sample ] = warpSample( I, grid, corners, corners_shifted )
     
     % warp the grid
     grid_warped = (H*[grid, ones(size(grid,1),1)]')';
-    grid_warped = round(grid_warped ./ repmat(grid_warped(:,3), 1,3));
+    grid_warped = grid_warped ./ repmat(grid_warped(:,3), 1,3);
     grid_warped = grid_warped(:,1:2);
     
     % find intensities covered by the warped grid
@@ -73,13 +70,11 @@ function [ warped_sample ] = warpSample( I, grid, corners, corners_shifted )
 
     intensities = interp2(1:size(I,2),1:size(I,1),I,grid_warped(:,1),grid_warped(:,2),'linear',0);  
 
-    normed_intensities = normIntensities(intensities);
-    
-    warped_sample = [grid_warped(:,1:2), normed_intensities];
-    
+    intensities = normIntensities(intensities);
     % add some random noise
-    warped_sample(:,3) = warped_sample(:,3) + rand(size(warped_sample(:,3)));
-
+    intensities = intensities + 0.00001*rand(size(intensities));
+    
+    warped_sample = [grid_warped, intensities];
 
 end
 

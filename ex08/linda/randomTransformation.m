@@ -5,7 +5,10 @@ function [ warped_sample, P ] = randomTransformation( I, corners, max_shift, gri
     corners_shifted = corners + rand_shift;
     P = rand_shift(:);
     
-    warped_sample = warpSample(I, grid, corners, corners_shifted);
+    % compute the transformation
+    H = normalized_dlt(corners, corners_shifted);
+    
+    warped_sample = warpSample(I, grid, inv(H));
     
 %     % backwarp the image
 %     [m,n] = size(I);
