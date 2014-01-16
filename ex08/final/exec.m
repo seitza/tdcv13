@@ -25,12 +25,12 @@ NUMPIC = 44;
 %M = number of iterations during one A in testing
 M = 5;
 
-% set image
+% set template image
 Im = double(rgb2gray(imread(strcat('image_sequence/0000.png'))));
-% generate grid
+% generate standard region grid
 [x,y] = meshgrid(min(region(:,1)):GD:max(region(:,1)),min(region(:,2)):GD:max(region(:,2)));
 regionGrid = [x(:),y(:)];
-% sample image
+% sample template image with standard grid
 T = sample(Im,regionGrid,0.0);
 
 %% run learning 
@@ -41,23 +41,40 @@ if ~exist('A','var')
     A = zeros(ni,8,size(T,1));
 
     for i = ni:-1:1
+        %size of Grid
         MD = 3*i;
 
+        %init P and I, later containing Perturbations and template/random
+        %image differences
         I = zeros(size(T,1),n);
         P = zeros(8,n);
         for s = 1:n
-            %disp([i s]);
+            
+            %create random changes to be added to region
             rand_rect = randi((2*MD)+1,4,2)-MD;
-            %DEBUG VON LINDA
+            
+            %create randomly perturbated region
             warpedRegion = region+rand_rect;
-            %r=region+reshape(rand_shift,4,2);
+            
+            %warp the standard region grid to the perturbated grid, get
+            %homography H
             [H,warpedRegionGrid] = warp(region,warpedRegion,regionGrid);
+            
+            %calculate backwarped standard region grid with inverted H
             backwarpedRegionGrid = useHomography(regionGrid,inv(H));
+            
+            %sample points in the template image, using the backwarped
+            %region grid
             S = sample(Im,backwarpedRegionGrid,0.01);
+            
+            %subtract template points from perturbated points and store inI
             I(:,s) = S-T;
+            
+            %store perturbations in P
             P(:,s) = rand_rect(:);
         end
         
+        %calculate A as pseudoinverse of I and P
         A(ni-i+1,:,:) = (P*I')*inv(I*I');
 
     end
@@ -74,6 +91,7 @@ for t = 1:NUMPIC
     %load image
     I = double(rgb2gray(imread(strcat('image_sequence/00',num2str(t,'%02d'),'.png'))));
     
+    %visualize
     figure;
     imagesc(I);
     hold on;
@@ -84,21 +102,14 @@ for t = 1:NUMPIC
     plot(region_plot(:,1),region_plot(:,2),'b');
     drawnow();
     
-    %DEBUG
-    %close all;
-    
     %apply all prealcualted matrices A per image
     for n = 1:size(A,1)
-        
-        %DEBUG
-        %close all;
         
         %applay every A(n,:,:) m times, eg 5 times
         for m = 1:M
 
             %a) Extract the image values at the sample positions warped according to the current parameter vector.
             %b) Normalize the extracted image values as done in the learning stage.
-
             [~,warpedRegionGrid] = warp(region,region+reshape(pCur,4,2),regionGrid);
             S = sample(I,warpedRegionGrid,0.0);
 
