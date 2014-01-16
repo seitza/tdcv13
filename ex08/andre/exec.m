@@ -12,30 +12,18 @@ end
 %region to be tracked
 region = [[350;450;450;350],[150;150;250;250]]; %100x100
 
-%DEBUG VON LINDA
-% xUL = 250;
-% yUL = 100; 
-% xUR = 351;
-% yUR = yUL;
-% xDR = xUR;
-% yDR = 201;
-% xDL = xUL;
-% yDL = yDR;
-% corners = [xUL, yUL; xUR, yUR; xDR, yDR; xDL, yDL];
-% region = corners;
-% rand_shift = [5,10,-4,6,1,-2,-10,8];
-%ENDE DEBUG VON LINDA
-
 %maximum divergence for random warps
 %MD = 30; % will be set during iteration over A
 %grid density
 GD = 5;
 %number of samples n> NumberOfGridPoints (400)
-n = 2000;
+n = 5000;
 %number of updates
 ni = 10;
 %number if available images
 NUMPIC = 44;
+%M = number of iterations during one A in testing
+M = 5;
 
 % set image
 Im = double(rgb2gray(imread(strcat('image_sequence/0000.png'))));
@@ -43,7 +31,7 @@ Im = double(rgb2gray(imread(strcat('image_sequence/0000.png'))));
 [x,y] = meshgrid(min(region(:,1)):GD:max(region(:,1)),min(region(:,2)):GD:max(region(:,2)));
 regionGrid = [x(:),y(:)];
 % sample image
-T = sample(Im,regionGrid);
+T = sample(Im,regionGrid,0.0);
 
 %% run learning 
 %only if A nonexistent
@@ -65,7 +53,7 @@ if ~exist('A','var')
             %r=region+reshape(rand_shift,4,2);
             [H,warpedRegionGrid] = warp(region,warpedRegion,regionGrid);
             backwarpedRegionGrid = useHomography(regionGrid,inv(H));
-            S = sample(Im,backwarpedRegionGrid);
+            S = sample(Im,backwarpedRegionGrid,0.01);
             I(:,s) = S-T;
             P(:,s) = rand_rect(:);
         end
@@ -106,13 +94,13 @@ for t = 1:NUMPIC
         %close all;
         
         %applay every A(n,:,:) m times, eg 5 times
-        for m = 1:5
+        for m = 1:M
 
             %a) Extract the image values at the sample positions warped according to the current parameter vector.
             %b) Normalize the extracted image values as done in the learning stage.
 
             [~,warpedRegionGrid] = warp(region,region+reshape(pCur,4,2),regionGrid);
-            S = sample(I,warpedRegionGrid);
+            S = sample(I,warpedRegionGrid,0.0);
 
             %c) Substract the normalized image values of the reference template from the current normalized image values.
             D = S-T;
