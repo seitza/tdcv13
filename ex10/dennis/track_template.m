@@ -7,7 +7,7 @@ function [P,R] = track_template(I,T, method)
     [m,n] = size(I);
     
     if strcmp(method, 'SSD') == 1
-        R = -ones([m n]);
+        R = realmax*ones([m n]);
     else
         R = zeros([m n]);
         % compute mean values of 
@@ -59,9 +59,7 @@ function [P,R] = track_template(I,T, method)
                 end
             end
             
-            best_score = max(max(R));
-            R = best_score - R;
-
+            best_score = min(min(R));
             best_match = find(R == best_score);
             [match_y, match_x] = ind2sub(size(R), best_match);
             P = [match_x; match_y];
