@@ -4,17 +4,26 @@ clear;
 close all;
 
 %% ex1
-
+% profile on;
 SCORING = 'ssd';
-SCALES = [2,4,8,16,32,64];
+SCALES = [2,4,8,16,32,64, 128,2^8];
 QUANTIL = 0.2;
+MAXT = 25;
 
 %I = double(rgb2gray(imread('brunnen.jpg')))./255;
 I = double(imread('brunnen.jpg'))./255;
+%I = double(imread('lena.jpg'))./255;
+%I = double(rgb2gray(imread('lena.jpg')))./255;
+[n,m,o] = size(I);
+
+% % normalize image
+% for i = 1:o
+%     t = I(:,:,i);
+%     I(:,:,i) = (I(:,:,i)-mean(t(:)))./std(t(:));
+% end
 
 figure;
 imagesc(I), colormap gray;
-[n,m,o] = size(I);
 
 rect = round(getrect());
 T = I(rect(2):rect(2)+rect(4), rect(1):rect(1)+rect(3), :);
@@ -39,35 +48,61 @@ end
 points = [x(:),y(:), zeros(numel(x),1)];
 new_points = points;
 
+small = 0;
+
+all_scores = zeros(o,1);
+
 for s = no_scales:-1:1
         
-    points = unique(new_points, 'rows');
     It = I_pyramid{s};
     T = T_pyramid{s};
     
-    if numel(T) < 25
+    if numel(T(:,:,1)) < MAXT
+        small = small +1;
+        [x,y] = meshgrid(1:size(I_pyramid{end-small}, 2), 1:size(I_pyramid{end-small}, 1));
+        points = [x(:),y(:), zeros(numel(x),1)];
+        new_points = points;
         continue;
     end
     
+    points = unique(new_points, 'rows');
+    
+    [k,l, z] = size(T);
+
     % pad image randomly
     It = pad_rand(It, T);
 
     % compute scores for all points
-    for p = 1:size(points,1)
-        disp(points(p,1:2));
-        points(p,3) = compute_score(points(p,1),points(p,2),It,T, SCORING);
+    %if strcmp(SCORING, 'ssd')
+    switch(SCORING)
+        case 'ssd'
+            for p = 1:size(points,1)
+%                 disp(points(p,1:2));
+                for i = 1:o
+                    all_scores(i) = sum(sum((T(:,:,i) - It(points(p,2):points(p,2)+k-1, points(p,1):points(p,1)+l-1,i)).^2));
+                end
+                points(p,3) = mean(all_scores);
+            end
+ %   else
+        case 'ncc'
+            for p = 1:size(points,1)
+%                 disp(points(p,1:2));
+                for i = 1:o
+                        I_rect = It(points(p,2):points(p,2)+k-1, points(p,1):points(p,1)+l-1,i);
+                        Tc = T(:,:,i);
+                        e = sum(sum(Tc .* I_rect));
+                        n = sqrt(sum(sum(Tc.^2))) * sqrt(sum(sum(I_rect.^2)));
+                        all_scores(i) = e/n;
+%                     I_rect = It(points(p,2):points(p,2)+k-1, points(p,1):points(p,1)+l-1,i);
+%                     e = sum(sum(T .* I_rect));
+%                     n = sqrt(sum(sum(T.^2))) * sqrt(sum(sum(I_rect.^2)));
+%                     all_scores(i) = sum(sum(T(:,:,i) .* I_rect))/sqrt(sum(sum(T(:,:,i).^2))) * sqrt(sum(sum(I_rect.^2)));
+%                     all_scores(i) = ncc(points(p,1),points(p,2),It(:,:,i),T(:,:,i));
+                end
+                points(p,3) = mean(all_scores);
+            end
     end
-%     if strcmp(SCORING,'ssd')
-%         for p = 1:size(points,1)
-%             disp(points(p,1:2));
-%             points(p,3) = ssd(points(p,1),points(p,2),It,T);
-%         end
-%     else
-%         for p = 1:size(points,1)
-%             disp(points(p,1:2));
-%             points(p,3) = ncc(points(p,1),points(p,2),It,T);
-%         end
-%     end
+        %points(p,3) = compute_score(points(p,1),points(p,2),It,T, SCORING);
     
     % find minima
     points = find_opt(points, QUANTIL, SCORING);
@@ -87,7 +122,6 @@ end
 
 %points = find_opt(points, 0.1, SCORING);
 points = points((points(:,3)==max(points(:,3))),:);
-%scores(scores(:,3)>=val,:)
 
 figure;
 imagesc(I), colormap gray;
@@ -96,4 +130,4 @@ plot(points(:,1), points(:,2), 'xr');
 t = [rect(2), rect(1); rect(2), rect(1)+rect(3); rect(2)+rect(4), rect(1)+rect(3); rect(2)+rect(4), rect(1);rect(2), rect(1)];
 plot(t(:,2), t(:,1), 'g-');
 
-
+% profile off;
