@@ -4,7 +4,7 @@ function [P,R] = track_template_color(I,T, method)
     end
     
     % determine template size
-    [m,n,~] = size(I);
+    [m,n,color_depth] = size(I);
     [m_t,n_t,~] = size(T);    
     h_half_t = floor(m_t/2);
     w_half_t = floor(n_t/2);
@@ -30,10 +30,10 @@ function [P,R] = track_template_color(I,T, method)
                     I_norm = I_norm - repmat(mean(mean(I_norm)), m_t, n_t, 1);
                     I_norm = I_norm ./ repmat(sqrt(sum(sum(I_norm.^2))), m_t, n_t, 1);
                     
-                    val = zeros(3,1);
+                    val = zeros(color_depth,1);
                     for i=1:m_t
                         for j=1:n_t
-                            for c=1:3
+                            for c=1:color_depth
                                 val(c) = val(c) + (T(i,j,c)*I_norm(i,j,c));
                             end
                         end
@@ -50,10 +50,10 @@ function [P,R] = track_template_color(I,T, method)
         case 'SSD'
             for y=h_half_t+1:m-h_half_t
                 for x=w_half_t+1:n-w_half_t
-                    val = zeros(3,1);
+                    val = zeros(color_depth,1);
                     for i=1:m_t
                         for j=1:n_t
-                            for c=1:3
+                            for c=1:color_depth
                                 val(c) = val(c) + (T(i,j,c) - I(y-h_half_t+i-1, x-w_half_t+j-1,c))^2;
                             end
                         end
@@ -70,4 +70,3 @@ function [P,R] = track_template_color(I,T, method)
             P = [match_x; match_y];
     end
 end
-
