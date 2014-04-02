@@ -10,5 +10,7 @@ function [ J ] = noise( I, type, sigma )
         J(J>255) = 255;
     end
 
+ok
+
 end
 
